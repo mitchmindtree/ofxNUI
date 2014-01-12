@@ -11,26 +11,27 @@ Check out an (early) example of it in action [here](https://www.youtube.com/watc
 Features
 --------
 
-* 2D Widgets in 3D space
-ofxNUI uses [Reza Ali’s comprehensive ofxUI](http://github.github.com/github-flavored-markdown/sample_content.html) for it’s 2D widget system. For those already familiar with Reza’s awesomely efficient UI framework, using this add-on will feel like a walk in the park.
+~ 2D WIDGETS IN 3D SPACE ~
 
-Simply derive any classes you’d like implemented in your UI from ofxNUIWidgetNode and your canvas is setup automatically (WidgetNode derives from ofxUISuperCanvas!). Add widgets by typing “addWidgetName(args)”. Add children nodes by typing “addChild(ofxNUINode*)” or “addChildList(vector<ofxNUINode*>)”. ofxNUI will automatically handle the positioning of both your nodes and widgets. Add listeners like you normally do, or use the pre-prepared “WidgetFunctions(string _widgetName)” that is already set-up for you with each widgetNode.
+ofxNUI uses [Reza Ali’s comprehensive ofxUI](http://github.github.com/github-flavored-markdown/sample_content.html) for it’s 2D widget system.
+
+For those already familiar with Reza’s awesomely efficient UI framework, using this add-on will feel like a walk in the park. Simply derive any classes you’d like implemented in your UI from ofxNUIWidgetNode and your canvas is setup automatically (WidgetNode derives from ofxUISuperCanvas!). Add widgets by typing “addWidgetName(args)”. Add children nodes by typing “addChild(ofxNUINode*)” or “addChildList(vector<ofxNUINode*>)”. ofxNUI will automatically handle the positioning of both your nodes and widgets. Add listeners like you normally do, or use the pre-prepared “WidgetFunctions(string _widgetName)” that is already set-up for you with each widgetNode.
 
 ofxUI is implemented almost entirely through polymorphism, so unless there are any major framework changes, ofxNUI will always remain immediately up-to-date and compatible. If you do come across any compatibility issues, feel free to raise an issue and I’ll look into it.
 
-* Multiple Node Layouts
+~ MULTIPLE NODE LAYOUTS ~
 Currently, different node layouts include:
-- Radial (surrounds parent node in a circle)
-- Spiral (same as radial, though spirals down the z-axis)
-- List (forms a vertical list next to the parent)
-- Grid (not yet implemented)
-- YOUR OWN AMAZING LAYOUT IDEA!
+* Radial (surrounds parent node in a circle)
+* Spiral (same as radial, though spirals down the z-axis)
+* List (forms a vertical list next to the parent)
+* Grid (not yet implemented)
+* YOUR OWN AMAZING LAYOUT IDEA!
 
-* Multiple Node Shapes
-- Spheres
-- Circles
-- Triangles
-- YOUR OWN AMAZING SHAPES!
+~ MULTIPLE NODE SHAPES ~
+* Spheres
+* Circles
+* Triangles
+* YOUR OWN AMAZING SHAPES!
 
 Help & Contribute!
 ------------------
@@ -52,8 +53,13 @@ Required ofxAddons
 
 Compatibility
 -------------
-The only testing that has occurred so far has been in Xcode 5, OSX 10.9, however 
+The only testing that has occurred so far has been in Xcode 5, OSX 10.9, however this should run on anything that openFrameworks is compatible with.
 
 Development Stage
 -----------------
 ofxNUI is still in its infancy, however is already entirely usable. Check the issues section to see my to-do list (and add your own!).
+
+
+~ ~ ~ ~ ~
+
+by [Mitchell Nordine](http://mitchellnordine.com/)
