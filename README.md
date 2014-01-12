@@ -6,6 +6,8 @@ A 3D, Generative, Nodal User Interface for openFrameworks
 
 ofxNUI is an add-on for openFrameworks that allows for an easy, transparent user interface implementation experience. It takes away the hassle of worrying about widget positioning and combines easy-to-use 2D UI widgets with the non-confined, unlimited nature of recursive 3D space.
 
+Check out an (early) example of it in action [here](https://www.youtube.com/watch?v=BK0f3CicNR4)
+
 Features
 --------
 
