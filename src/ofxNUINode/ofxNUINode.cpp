@@ -34,6 +34,7 @@ void ofxNUINode::init()
     nodeName = "";
     siblingPerc = 0.0f;
     parentNode = NULL;
+    colorScheme = NULL;
     
     depth = 0;
     depthFromActive = 0;
@@ -58,13 +59,13 @@ void ofxNUINode::init()
     baseBlu = 160;
     baseAlpha = 180;
     
-    baseLineColour = ofColor(baseRed,baseGrn,baseBlu, 150);
-    baseShapeColour = ofColor(baseRed,baseGrn,baseBlu, 150);
-    baseNameColour = ofColor(baseRed+25,baseGrn+25,baseBlu, 250);
+    baseLineColor = ofColor(baseRed,baseGrn,baseBlu, 150);
+    baseShapeColor = ofColor(baseRed,baseGrn,baseBlu, 150);
+    baseNameColor = ofColor(baseRed+25,baseGrn+25,baseBlu, 250);
     
-    lineColour = baseLineColour;
-    shapeColour = baseShapeColour;
-    nameColour = baseNameColour;
+    lineColor = baseLineColor;
+    shapeColor = baseShapeColor;
+    nameColor = baseNameColor;
     
     //active = false;
     //highlight = false;
@@ -298,6 +299,7 @@ void ofxNUINode::updateNodePositionGrid()
 
 void ofxNUINode::updateNodeColors()
 {
+    if (!colorScheme) { return; }
     updateShapeColor();
     updateLineColor();
     updateNameColor();
@@ -311,81 +313,56 @@ void ofxNUINode::updateShapeColor()
 {
     
     //if (!shape) { return; }
-    
+    if (colorScheme) {
+        colorScheme->getLineColor();
+    }
     /* Set shape size and position */
     //shape->setRadius(getNodeRadius());
     sphere.setRadius(getNodeRadius());
     
     if (!getParentNode()) {
         if (isActive()) {
-            red = baseRed - 30;
-            grn = baseGrn + 40;
-            blu = baseBlu - 30;
-            alpha = baseAlpha;
+            shapeColor = colorScheme->getShapeColorActive();
         }
         else {
-            luminanceReduction = 120;
-            red = ofClamp(baseRed - luminanceReduction, 0, 254);
-            grn = ofClamp(baseGrn - luminanceReduction, 0, 254);
-            blu = ofClamp(baseBlu - luminanceReduction, 0, 254);
-            alpha = ofClamp(baseAlpha - luminanceReduction * 0.2f, 0, 254);
+            shapeColor =colorScheme->getShapeColorActiveDepth(getDepthFromActive());
         }
     }
     
     /* If node is currently active */
     else if (isActive()) {
-        red = baseRed - 30;
-        grn = baseGrn + 40;
-        blu = baseBlu - 30;
-        alpha = baseAlpha;
+        shapeColor = colorScheme->getShapeColorActive();
     }
     
     /* If node is currently highlighted */
     else if (isHighlighted()) {
-        red = baseRed + 40;
-        grn = baseGrn * 0.5f;
-        blu = baseBlu * 0.5f;
-        alpha = baseAlpha;
+        shapeColor = colorScheme->getShapeColorHighlighted();
     }
     
     /* If parent of node is currently active */
     else if (getParentNode()->isActive()) {
-        red = baseRed * 0.5f;
-        grn = baseGrn - 20;
-        blu = baseBlu;
-        alpha = ofClamp(baseAlpha * 1.5f, 0, 254);
+        shapeColor = colorScheme->getShapeColorActiveParent();
     }
     
     /* If is derived from highlighted node */
     else if (depthFromHighlighted > 0) {
-        luminanceReduction = 30 * depthFromHighlighted;
-        red = ofClamp(baseRed - luminanceReduction, 0, 254) * 1.5f;
-        grn = ofClamp(baseGrn - luminanceReduction, 0, 254) * 0.3f;
-        blu = ofClamp(baseBlu - luminanceReduction, 0, 254) * 0.3f;
-        alpha = baseAlpha;
+        shapeColor =
+            colorScheme->getShapeColorHighlightDepth(getDepthFromHighlighted());
     }
     
     /* If is any other type of node derived from active */
     else if (depthFromActive > 0) {
-        luminanceReduction = 100 * depthFromActive;
-        red = ofClamp(baseRed - luminanceReduction, 0, 254);
-        grn = ofClamp(baseGrn - luminanceReduction, 0, 254);
-        blu = ofClamp(baseBlu - luminanceReduction, 0, 254);
-        alpha = ofClamp(baseAlpha - luminanceReduction * 0.2f, 0, 254);
+        shapeColor = colorScheme->getShapeColorActiveDepth(getDepthFromActive());
     }
     
     /* If is any other type of node not derived from active */
     else if (depthFromActive < 0) {
-        luminanceReduction = 120;
-        red = ofClamp(baseRed - luminanceReduction, 0, 254);
-        grn = ofClamp(baseGrn - luminanceReduction, 0, 254);
-        blu = ofClamp(baseBlu - luminanceReduction, 0, 254);
-        alpha = ofClamp(baseAlpha - luminanceReduction * 0.2f, 0, 254);
+        shapeColor = colorScheme->getShapeColorActiveDepth(getDepthFromActive());
     }
     
-    shapeColour = ofColor(red, grn, blu, alpha);
-    //shape->setColor(shapeColour);
-    sphere.setColor(shapeColour);
+    //shapeColor = ofColor(red, grn, blu, alpha);
+    //shape->setColor(shapeColor);
+    sphere.setColor(shapeColor);
     
 }
 
@@ -400,61 +377,38 @@ void ofxNUINode::updateLineColor()
     
     /* If node is currently active */
     if (isActive()) {
-        red = baseRed;
-        grn = baseGrn * 1.5f;
-        blu = baseBlu;
-        alpha = baseAlpha;
-        lineColour = ofColor(red, grn, blu, alpha);
-        return;
+        lineColor = colorScheme->getLineColorActive();
     }
     
     /* If node is currently highlighted */
     else if (isHighlighted()) {
-        luminanceReduction = 30 * depthFromActive;
-        red = baseRed - luminanceReduction;
-        grn = baseGrn - luminanceReduction;
-        blu = baseBlu - luminanceReduction;
-        red += (255 - red) * 0.75f;
-        lineColour = ofColor(red, grn, blu, 200);
-        return;
+        lineColor = colorScheme->getLineColorHighlighted();
     }
     
     /* If parent node is active */
     else if (getParentNode()->isActive()) {
-        red = baseRed * 0.5f;
-        grn = baseGrn * 0.8f;
-        blu = baseBlu;
-        alpha = baseAlpha;
-        lineColour = ofColor(red, grn, blu, baseAlpha);
-        return;
+        lineColor = colorScheme->getLineColorActiveParent();
     }
     
     /* If is derived from highlighted node */
-    else if (depthFromHighlighted > 0) {
-        luminanceReduction = 30 * depthFromHighlighted;
-        red = ofClamp(baseRed - luminanceReduction, 0, 254);
-        grn = ofClamp(baseGrn - luminanceReduction*1.3f, 0, 254);
-        blu = ofClamp(baseBlu - luminanceReduction*1.3f, 0, 254);
-        red += (255 - red) * 0.25f;
-        lineColour = ofColor(red, grn, blu,ofClamp(200-luminanceReduction,0,254));
-        return;
+    else if (getDepthFromHighlighted() > 0) {
+        lineColor =
+        colorScheme->getLineColorHighlightDepth(getDepthFromHighlighted());
     }
     
     /* If is any other type of node derived from active */
     else if (depthFromActive > 0) {
-        luminanceReduction = 43 * depthFromActive;
+        lineColor = colorScheme->getLineColorActiveDepth(getDepthFromActive());
     }
     
     /* If is any other type of node not derived from active */
     else if (depthFromActive < 0) {
-        luminanceReduction = 120;
+        lineColor = colorScheme->getLineColorActiveDepth(getDepthFromActive());
     }
     
-    red = ofClamp(baseRed - luminanceReduction, 0, 254);
-    grn = ofClamp(baseGrn - luminanceReduction, 0, 254);
-    blu = ofClamp(baseBlu - luminanceReduction, 0, 254);
-    alpha = baseAlpha * 0.75f * (float)luminanceReduction / (float)255;
-    lineColour = ofColor(red, grn, blu, alpha);
+    else {
+        lineColor = colorScheme->getLineColor();
+    }
     
 }
 
@@ -466,10 +420,10 @@ void ofxNUINode::updateNameColor()
 {
     
     if (isHighlighted() || isActive()) {
-        nameColour = baseNameColour + ofColor(40, -20, -20, 4);
+        nameColor = colorScheme->getNameColorActive();
     }
     else {
-        nameColour = baseNameColour;
+        nameColor = colorScheme->getNameColor();
     }
     
 }
@@ -775,7 +729,7 @@ void ofxNUINode::drawLine()
     
     /* If there is parent... */
     if (getParentNode()) {
-        ofSetColor(lineColour);
+        ofSetColor(lineColor);
         line.draw();
     }
     
@@ -795,7 +749,7 @@ void ofxNUINode::drawName()
         if (getParentNode()->isHighlighted() == false) { return; }
     }
     
-    ofSetColor(nameColour);
+    ofSetColor(nameColor);
     ofDrawBitmapString(nodeName,    getPosition().x + getNodeRadius() + 5,
                                     getPosition().y,
                                     getPosition().z);

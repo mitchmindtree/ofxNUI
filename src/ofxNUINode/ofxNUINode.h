@@ -182,13 +182,13 @@ private:
     ofPolyline line;
     
     int luminanceReduction;
-    ofColor lineColour;
-    ofColor shapeColour;
-    ofColor nameColour;
+    ofColor lineColor;
+    ofColor shapeColor;
+    ofColor nameColor;
     
-    ofColor baseLineColour;
-    ofColor baseShapeColour;
-    ofColor baseNameColour;
+    ofColor baseLineColor;
+    ofColor baseShapeColor;
+    ofColor baseNameColor;
     
     int red;
     int grn;

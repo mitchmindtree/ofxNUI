@@ -41,6 +41,8 @@ void ofxNUIColorScheme::init()
     baseShapeColor = ofColor(baseRed,baseGrn,baseBlu, 150);
     baseNameColor = ofColor(baseRed+25,baseGrn+25,baseBlu, 250);
     
+    genAndSetColors();
+    
 }
 
 //--------------------------------------------------------------------------------//
@@ -190,7 +192,12 @@ ofColor ofxNUIColorScheme::getLineColorActiveParent()
 
 ofColor ofxNUIColorScheme::getLineColorActiveDepth(int depthFromActive)
 {
-    luminanceReduction = 43 * depthFromActive;
+    if (depthFromActive > 0) {
+        luminanceReduction = 43 * depthFromActive;
+    }
+    else if (depthFromActive < 0) {
+        luminanceReduction = 120 * depthFromActive;
+    }
     red = ofClamp(baseRed - luminanceReduction, 0, 254);
     grn = ofClamp(baseGrn - luminanceReduction, 0, 254);
     blu = ofClamp(baseBlu - luminanceReduction, 0, 254);
@@ -255,7 +262,7 @@ ofColor ofxNUIColorScheme::getShapeColorActiveParent()
 
 ofColor ofxNUIColorScheme::getShapeColorActiveDepth(int depthFromActive)
 {
-    luminanceReduction = 43 * depthFromActive;
+    luminanceReduction = 100 * depthFromActive;
     red = ofClamp(baseRed - luminanceReduction, 0, 254);
     grn = ofClamp(baseGrn - luminanceReduction, 0, 254);
     blu = ofClamp(baseBlu - luminanceReduction, 0, 254);
