@@ -9,7 +9,6 @@
 #ifndef GenMax_ofxNUI_h
 #define GenMax_ofxNUI_h
 
-#include "ofxNUIAesthetic.h"
 #include "ofxNUIColorScheme.h"
 #include "ofxNUINode.h"
 #include "ofxNUIShape.h"

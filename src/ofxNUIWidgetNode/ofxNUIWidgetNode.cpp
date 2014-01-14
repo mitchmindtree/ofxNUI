@@ -1,10 +1,27 @@
-//
-//  ofxNUIWidgetNode.cpp
-//  GenMax
-//
-//  Created by Mitchell Nordine on 15/12/2013.
-//
-//
+/**********************************************************************************
+ 
+ Copyright (C) 2014 Mitchell Nordine (www.mitchellnordine.com)
+ 
+ Permission is hereby granted, free of charge, to any person obtaining a copy of
+ this software and associated documentation files (the "Software"), to deal in
+ the Software without restriction, including without limitation the rights to
+ use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies
+ of the Software, and to permit persons to whom the Software is furnished to do
+ so, subject to the following conditions:
+ 
+ The above copyright notice and this permission notice shall be included in all
+ copies or substantial portions of the Software.
+ 
+ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ SOFTWARE.
+ 
+ **********************************************************************************/
+
 
 #include "ofxNUIWidgetNode.h"
 
@@ -57,10 +74,10 @@ void ofxNUIWidgetNode::addWidgetsToSuperCanvas()
 // UPDATE ofxNUINode (OVERLOAD OF ofxNUINode)
 //--------------------------------------------------------------------------------//
 
-void ofxNUIWidgetNode::updateofxNUINode()
+void ofxNUIWidgetNode::updateNode()
 {
     
-    ofxNUINode::updateofxNUINode();
+    ofxNUINode::updateNode();
     
     if (!superCanvas) { return; }
     
@@ -73,8 +90,8 @@ void ofxNUIWidgetNode::updateofxNUINode()
         superCanvas->setVisible(true);
         superCanvas->setMinified(false);
     }
-    else if (getParent()){
-        if (getParent()->isActive()) {
+    else if (getParentNode()){
+        if (getParentNode()->isActive()) {
             superCanvas->setVisible(true);
             superCanvas->setMinified(true);
         }
@@ -98,9 +115,9 @@ void ofxNUIWidgetNode::setHighlight(bool _isHighlighted)
     
     ofxNUINode::setHighlight(_isHighlighted);
     
-    if (getParent()) {
-        if (getParent()->getParent()) { if(getParent()->getParent()->isActive()){} }
-        else if (!getParent()->isActive()) { return; }
+    if (getParentNode()) {
+        if (getParentNode()->getParentNode()) { if(getParentNode()->getParentNode()->isActive()){} }
+        else if (!getParentNode()->isActive()) { return; }
     }
     
     if (!superCanvas || !superCanvas->isVisible() || isActive()) { return; }
@@ -128,7 +145,7 @@ void ofxNUIWidgetNode::updateSuperCanvas()
     if (!superCanvas) { return; }
     
     numOfWidgets = widgets.size();
-    circumference = PI * getSphereRadius() * 2;
+    circumference = PI * getNodeRadius() * 2;
     highlightWidth = circumference * getSiblingPerc();
     
     //updateSuperCanvasWidgetDimensions();
@@ -249,7 +266,7 @@ void ofxNUIWidgetNode::updateSuperCanvasPosition()
     if (!superCanvas || !canvas || !cam) { return; }
     
     ofVec2f current = cam->worldToScreen(
-                                getPosition()+ofVec3f(getSphereRadius(),0,0) );
+                                getPosition()+ofVec3f(getNodeRadius(),0,0) );
     
     superCanvas->setPosition(current.x, current.y);
     

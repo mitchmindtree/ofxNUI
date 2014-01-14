@@ -1,10 +1,27 @@
-//
-//  ofxNUINode.h
-//  GenMax
-//
-//  Created by Mitchell Nordine on 10/12/2013.
-//
-//
+/**********************************************************************************
+ 
+ Copyright (C) 2014 Mitchell Nordine (www.mitchellnordine.com)
+ 
+ Permission is hereby granted, free of charge, to any person obtaining a copy of
+ this software and associated documentation files (the "Software"), to deal in
+ the Software without restriction, including without limitation the rights to
+ use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies
+ of the Software, and to permit persons to whom the Software is furnished to do
+ so, subject to the following conditions:
+ 
+ The above copyright notice and this permission notice shall be included in all
+ copies or substantial portions of the Software.
+ 
+ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ SOFTWARE.
+ 
+ **********************************************************************************/
+
 
 #ifndef __GenMax__ofxNUINode__
 #define __GenMax__ofxNUINode__
@@ -17,21 +34,25 @@
 #include "ofxTween.h"
 #include "ofxNUIColorScheme.h"
 
-#define JEN_NODE_RADIUS 300.0f
-#define JEN_NODE_DEPTH -200.0f
+#define OFXNUINODE_LAYOUT_RADIUS 300.0f
+#define OFXNUINODE_LAYOUT_DEPTH -200.0f
 
-#define JEN_NODE_LAYOUT_RADIAL 0
-#define JEN_NODE_LAYOUT_SPIRAL 1
-#define JEN_NODE_LAYOUT_LIST 2
-#define JEN_NODE_LAYOUT_GRID 3
+#define OFXNUINODE_LAYOUT_RADIAL 0
+#define OFXNUINODE_LAYOUT_SPIRAL 1
+#define OFXNUINODE_LAYOUT_LIST 2
+#define OFXNUINODE_LAYOUT_GRID 3
 
-#define JEN_SPIRAL_DEPTH_THRESHHOLD 32
-#define JEN_SPIRAL_DEPTH_THRESHHOLD_PERC 0.03125f
+#define OFXNUINODE_SPIRAL_DEPTH_THRESHHOLD 32
+#define OFXNUINODE_SPIRAL_DEPTH_THRESHHOLD_PERC 0.03125f
 
-#define DEFAULT_POS_TWEEN_DURATION 1000
-#define DEFAULT_POS_TWEEN_DELAY 0
+#define OFXNUINODE_DEFAULT_POS_TWEEN_DURATION 1000
+#define OFXNUINODE_DEFAULT_POS_TWEEN_DELAY 0
 
-#define JEN_MAX_NUM_OF_CHILDREN 300
+#define OFXNUINODE_NODE_RADIUS 10
+
+#define OFXNUINODE_SHAPE_SPHERE 0
+#define OFXNUINODE_SHAPE_CIRCLE 1
+#define OFXNUINODE_SHAPE_TRIANGLE 2
 
 /* Class */
 
@@ -56,8 +77,6 @@ public:
     virtual string getNodeType() { return "ofxNUINode"; }
     
     void init();
-    void setNodeName(string _name);
-    
     
     /* Add Children */
     void addChild(ofxNUINode *_child);
@@ -65,39 +84,45 @@ public:
     void addChild(ofxNUINode *_child, string _name);
     void addChildList(vector<ofxNUINode*> childList, string _name);
     
-    /* Update When Activated */
+    /* Update When A New Node is Activated */
     void updateChildren();
-    virtual void updateofxNUINode();
+    virtual void updateNode();
     void updateNodeDepth();
     virtual void updateNodePosition();
     void updateNodePositionRadial();
     void updateNodePositionSpiral();
     void updateNodePositionList();
     void updateNodePositionGrid();
-    void updateNodeColours();
-    void genAndSetSphereRadius();
+    void updateNodeColors();
+    void updateLineColor(); /* Copy from glNode */
+    void updateNameColor(); /* Copy from glNode */
+    void updateShapeColor(); /* Copy from glNode */
     
-    void setSphereRadius(int _sphereRadius);
-    void setParentJN(ofxNUINode *_parent);
-    void setLineColour();
-    void setSphereColour();
-    void setNameColour();
-    void setNumOfSiblings(int _numOfSiblings);
-    void setSiblingPerc(int _siblingNum);
+    /* Set Stuff */
+    void setColorScheme(ofxNUIColorScheme *_colorScheme);
     void setNodeLayout(int _layout);
+    void setNodeName(string _name);
+    void setNodePosition(ofVec3f _position);
+    void setNodeRadius(int _nodeRadius);
+    void setNumOfSiblings(int _numOfSiblings);
+    void setParentNode(ofxNUINode *_parent);
     void setPositionTween(ofVec3f _position);
-    void setPositionJN(ofVec3f _position);
+    void setShapeType(int _nodeShape);
+    void setSiblingPerc(int _siblingNum);
     
-    /* Return Node Stuff */
-    string getNodeName();
+    /* Return Stuff */
     vector<ofxNUINode*>* getChildren();
-    ofxNUINode* getParent();
-    int getSphereRadius();
+    int getDepth();
     int getDepthFromActive();
-    float getSiblingPerc();
-    int getNumOfSiblings();
+    int getDepthFromHighlighted();
     int getNodeLayout();
-    ofVec3f getPositionJN();
+    string getNodeName();
+    ofVec3f getNodePosition();
+    int getNodeRadius();
+    int getNumOfSiblings();
+    ofxNUINode* getParentNode();
+    int getShapeType();
+    float getSiblingPerc();
     int getSiblingNum();
     
     /* Update */
@@ -106,44 +131,47 @@ public:
     
     /* Draw */
     virtual void customDraw();
-    void drawSphere();
     void drawLine();
     void drawName();
+    void drawShape();
     
-    /* Conditions */
+    /* Conditions (Active) */
     bool isActive();
-    void toggleActive();
     void setActive(bool _isActive);
     void setChildAsActive(ofxNUINode *_child);
     void setParentAsActive();
+    void toggleActive();
     
+    /* Conditions (Highlighted) */
     bool isHighlighted();
-    void toggleHighlight();
     virtual void setHighlight(bool _isHighlighted);
     void setHighlightDepth();
     void resetHighlightDepth();
-
+    void toggleHighlight();
+    
     
     /* Variable Declaration */
+    
 private:
-    string nodeName;
-    int siblingNum;
-    int numOfSiblings;
+    
+    bool active;
+    Algebraic algebraic;
     int depth;
     int depthFromActive;
     int depthFromHighlighted;
     float depthRatio;
-    float siblingPerc;
-    Algebraic algebraic;
-    bool active;
     bool highlight;
-    int sphereRadius;
-    bool hidden;
     int nodeLayout;
+    string nodeName;
+    int nodeRadius;
+    int numOfSiblings;
     float positionDepth;
     float positionRadius;
     int posTweenDurMs;
     int posTweenDelMs;
+    int siblingNum;
+    float siblingPerc;
+    int shapeType;
     
     ofVec3f position;
     ofVec3f positionJN;
@@ -156,11 +184,11 @@ private:
     
     int luminanceReduction;
     ofColor lineColour;
-    ofColor sphereColour;
+    ofColor shapeColour;
     ofColor nameColour;
     
     ofColor baseLineColour;
-    ofColor baseSphereColour;
+    ofColor baseShapeColour;
     ofColor baseNameColour;
     
     int red;
@@ -173,8 +201,9 @@ private:
     int baseBlu;
     int baseAlpha;
     
-    /* Class Instances */
+    /* Class Pointers */
     
+    //ofxNUIShape *shape;
     ofxNUIColorScheme *colorScheme;
     ofxNUINode *parentNode;
     ofxNUINode *child;
