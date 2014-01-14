@@ -155,7 +155,6 @@ public:
 private:
     
     bool active;
-    Algebraic algebraic;
     int depth;
     int depthFromActive;
     int depthFromHighlighted;

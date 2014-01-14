@@ -245,9 +245,10 @@ void ofxNUINode::updateNodePosition()
 
 void ofxNUINode::updateNodePositionRadial()
 {
-    algebraic.setup(getSiblingPerc() + getParentNode()->getSiblingPerc() + 0.25f);
-    position = ofVec3f(algebraic.getSine() * positionRadius,
-                       algebraic.getCosine() * positionRadius,
+    //algebraic.setup();
+    float x = getSiblingPerc() + getParentNode()->getSiblingPerc() + 0.25f;
+    position = ofVec3f(sin(TWO_PI * x) * positionRadius,
+                       cos(TWO_PI * x) * positionRadius,
                        positionDepth);
 }
 
@@ -258,11 +259,11 @@ void ofxNUINode::updateNodePositionRadial()
 void ofxNUINode::updateNodePositionSpiral()
 {
     if (getNumOfSiblings() >= OFXNUINODE_SPIRAL_DEPTH_THRESHHOLD) {
-        algebraic.setup((getSiblingPerc()/(1.0f/(float)getNumOfSiblings()))
-                        * OFXNUINODE_SPIRAL_DEPTH_THRESHHOLD_PERC
-                        + getParentNode()->getSiblingPerc() + 0.75f);
-        position = ofVec3f(algebraic.getSine() * positionRadius,
-                           algebraic.getCosine() * positionRadius,
+        float x = (getSiblingPerc()/(1.0f/(float)getNumOfSiblings()))
+                    * OFXNUINODE_SPIRAL_DEPTH_THRESHHOLD_PERC
+                    + getParentNode()->getSiblingPerc() + 0.75f;
+        position = ofVec3f(sin(TWO_PI * x) * positionRadius,
+                           cos(TWO_PI * x) * positionRadius,
                            positionDepth
                            - (getSiblingPerc() / (1.0f/(float)getNumOfSiblings()))
                            * 50.0f);
