@@ -31,7 +31,7 @@
 
 void ofxNUINode::init()
 {
-    nodeName = "";
+    nodeLabel = "";
     siblingPerc = 0.0f;
     parentNode = NULL;
     colorScheme = NULL;
@@ -85,8 +85,8 @@ void ofxNUINode::addChild(ofxNUINode *_child)
     
     for (int i=0; i < children.size(); i++) {
         child = children.at(i);
-        if (child->nodeName == "") {
-            child->setNodeName(child->getName());
+        if (child->nodeLabel == "") {
+            child->setNodeLabel(child->getNodeName());
         }
         child->setNumOfSiblings(children.size());
         child->setSiblingPerc(i);
@@ -102,7 +102,7 @@ void ofxNUINode::addChild(ofxNUINode *_child)
 
 void ofxNUINode::addChild(ofxNUINode *_child, int num)
 {
-    _child->setNodeName(_child->getName() + " " + ofToString(num));
+    _child->setNodeLabel(_child->getNodeName() + " " + ofToString(num));
     addChild(_child);
 }
 
@@ -110,7 +110,7 @@ void ofxNUINode::addChild(ofxNUINode *_child, int num)
 
 void ofxNUINode::addChild(ofxNUINode *_child, string _name)
 {
-    _child->setNodeName(_name);
+    _child->setNodeLabel(_name);
     addChild(_child);
 }
 
@@ -122,7 +122,7 @@ void ofxNUINode::addChildList(vector<ofxNUINode *> childList, string _name)
 {
     
     ofxNUINode *listParent = new ofxNUINode;
-    listParent->setNodeName(_name);
+    listParent->setNodeLabel(_name);
     addChild(listParent);
     
     listParent->getChildren()->reserve(childList.size());
@@ -453,9 +453,9 @@ void ofxNUINode::setNodeLayout(int _layout)
 // SET NODE NAME
 //--------------------------------------------------------------------------------//
 
-void ofxNUINode::setNodeName(string _nodeName)
+void ofxNUINode::setNodeLabel(string _nodeLabel)
 {
-    nodeName = _nodeName;
+    nodeLabel = _nodeLabel;
 }
 
 //--------------------------------------------------------------------------------//
@@ -581,9 +581,9 @@ int ofxNUINode::getNodeLayout()
 // RETURN NODE NAME
 //--------------------------------------------------------------------------------//
 
-string ofxNUINode::getNodeName()
+string ofxNUINode::getNodeLabel()
 {
-    return nodeName;
+    return nodeLabel;
 }
 
 //--------------------------------------------------------------------------------//
@@ -750,7 +750,7 @@ void ofxNUINode::drawName()
     }
     
     ofSetColor(nameColor);
-    ofDrawBitmapString(nodeName,    getPosition().x + getNodeRadius() + 5,
+    ofDrawBitmapString(nodeLabel,    getPosition().x + getNodeRadius() + 5,
                                     getPosition().y,
                                     getPosition().z);
     

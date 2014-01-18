@@ -26,6 +26,21 @@
 #include "ofxNUIWidgetNode.h"
 
 //--------------------------------------------------------------------------------//
+// INITIALISE
+//--------------------------------------------------------------------------------//
+
+void ofxNUIWidgetNode::init()
+{
+    superCanvasName = getNodeName();
+    slider = NULL;
+    numberDialer = NULL;
+    labelButton = NULL;
+    widget = NULL;
+    canvas = NULL;
+    numOfWidgets = 0;
+}
+
+//--------------------------------------------------------------------------------//
 // SET CANVAS
 //--------------------------------------------------------------------------------//
 
@@ -35,7 +50,7 @@ void ofxNUIWidgetNode::setupCanvasAndCamera(ofxUICanvas *_canvas, ofEasyCam *_ca
     canvas = _canvas;
     cam = _cam;
     
-    superCanvas = new ofxUISuperCanvas(getNodeName(), ofxNUINode::getPosition().x,
+    superCanvas = new ofxUISuperCanvas(getNodeLabel(), ofxNUINode::getPosition().x,
                                        ofxNUINode::getPosition().y, 10, 10,
                                        OFX_UI_FONT_SMALL);
     
@@ -49,8 +64,6 @@ void ofxNUIWidgetNode::setupCanvasAndCamera(ofxUICanvas *_canvas, ofEasyCam *_ca
     addWidgetsToSuperCanvas();
     
     ofAddListener(superCanvas->newGUIEvent, this, &ofxNUIWidgetNode::widgetEventListener);
-    
-    return;
     
 }
 
@@ -116,7 +129,9 @@ void ofxNUIWidgetNode::setHighlight(bool _isHighlighted)
     ofxNUINode::setHighlight(_isHighlighted);
     
     if (getParentNode()) {
-        if (getParentNode()->getParentNode()) { if(getParentNode()->getParentNode()->isActive()){} }
+        if (getParentNode()->getParentNode()) {
+            if(getParentNode()->getParentNode()->isActive()){}
+        }
         else if (!getParentNode()->isActive()) { return; }
     }
     

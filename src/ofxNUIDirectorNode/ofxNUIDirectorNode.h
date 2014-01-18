@@ -49,7 +49,7 @@ public:
     
     /* Functions */
     
-    virtual string getName() { return "ofxNUIDirectorNode"; }
+    virtual string getNodeName() { return "ofxNUIDirectorNode"; }
     virtual string getNodeType() { return "ofxNUIDirectorNode"; }
     
     void init();

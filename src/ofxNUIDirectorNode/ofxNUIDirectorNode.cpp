@@ -41,11 +41,11 @@ void ofxNUIDirectorNode::init()
 void ofxNUIDirectorNode::setup(vector<ofxNUINode *> _nodes)
 {
     
-    setNodeName(getName());
+    setNodeLabel(getName());
     setActiveNode(this);
     setActive(true);
     setHighlight(false);
-    setPosition(0.0f, 0.0f, 0.0f);
+    ofNode::setPosition(0.0f, 0.0f, 0.0f);
     setColorScheme(&coreColorScheme);
     setShapeType(OFXNUINODE_SHAPE_SPHERE);
     setupCanvas();
@@ -310,7 +310,7 @@ void ofxNUIDirectorNode::findClosestChild()
         return;
     }
     
-    if (closestChild->getNodeName() != prevClosestChild->getNodeName()) {
+    if (closestChild->getNodeLabel() != prevClosestChild->getNodeLabel()) {
         prevClosestChild->setHighlight(false);
         closestChild->setHighlight(true);
         prevClosestChild = closestChild;

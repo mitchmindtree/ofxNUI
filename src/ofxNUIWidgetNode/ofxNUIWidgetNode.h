@@ -46,22 +46,31 @@
 #define WIDGET_VERTICAL_PADDING_ACTIVE 20
 #define WIDGET_VERTICAL_PADDING_HIGHLIGHTED 5
 
+class ofxUISuperCanvasHelper: public ofxUISuperCanvas {
+public:
+    ofxUISuperCanvasHelper(string _label = "WidgetNode",
+                           int _size = OFX_UI_FONT_MEDIUM)
+    : ofxUISuperCanvas(_label, _size) {}
+    virtual string& getSuperCanvasName() {}
+    string superCanvasName;
+    string& getName()
+    {
+        return getSuperCanvasName();
+    }
+};
+
 /* Class */
 
-class ofxNUIWidgetNode : public ofxNUINode {
+class ofxNUIWidgetNode : public ofxNUINode, public ofxUISuperCanvasHelper {
     
 public:
     
     /* Constructors & Destructors */
     
-    ofxNUIWidgetNode(){
-        slider = NULL;
-        numberDialer = NULL;
-        labelButton = NULL;
-        canvas = NULL;
-        widget = NULL;
-        canvas = NULL;
-        numOfWidgets = 0;
+    ofxNUIWidgetNode(string _label = "WidgetNode",
+                     int _size = OFX_UI_FONT_MEDIUM)
+    : ofxUISuperCanvasHelper(_label, _size), ofxNUINode() {
+        init();
     }
     
     ~ofxNUIWidgetNode(){
@@ -70,9 +79,11 @@ public:
     
     /* Functions */
     
-    virtual string getName() { return "ofxNUIWidgetNode"; }
+    virtual string getNodeName() { return "ofxNUIWidgetNode"; }
+    virtual string& getSuperCanvasName() { return superCanvasName; }
     virtual string getNodeType() { return "ofxNUIWidgetNode"; }
     
+    virtual void init();
     void setupCanvasAndCamera(ofxUICanvas *_canvas, ofEasyCam *_cam);
     void addWidgetsToSuperCanvas();
     void updateNode();
@@ -143,5 +154,7 @@ public:
     ofxUICanvas *canvas;
     
 };
+
+
 
 #endif /* defined(__GenMax__ofxNUIWidgetNode__) */

@@ -73,7 +73,7 @@ public:
     /* Functions */
     
     /* Name */
-    virtual string getName() { return "ofxNUINode"; }
+    virtual string getNodeName() { return "ofxNUINode"; }
     virtual string getNodeType() { return "ofxNUINode"; }
     
     void init();
@@ -101,7 +101,7 @@ public:
     /* Set Stuff */
     void setColorScheme(ofxNUIColorScheme *_colorScheme);
     void setNodeLayout(int _layout);
-    void setNodeName(string _name);
+    void setNodeLabel(string _name);
     void setNodePosition(ofVec3f _position);
     void setNodeRadius(int _nodeRadius);
     void setNumOfSiblings(int _numOfSiblings);
@@ -116,7 +116,7 @@ public:
     int getDepthFromActive();
     int getDepthFromHighlighted();
     int getNodeLayout();
-    string getNodeName();
+    string getNodeLabel();
     ofVec3f getNodePosition();
     int getNodeRadius();
     int getNumOfSiblings();
@@ -161,7 +161,7 @@ private:
     float depthRatio;
     bool highlight;
     int nodeLayout;
-    string nodeName;
+    string nodeLabel;
     int nodeRadius;
     int numOfSiblings;
     float positionDepth;
