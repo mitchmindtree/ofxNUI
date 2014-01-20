@@ -50,21 +50,46 @@ void ofxNUIWidgetNode::setupCanvasAndCamera(ofxUICanvas *_canvas, ofEasyCam *_ca
     canvas = _canvas;
     cam = _cam;
     
-    superCanvas = new ofxUISuperCanvas(getNodeLabel(), ofxNUINode::getPosition().x,
+    
+    ofxUISuperCanvas::setPosition(ofxNUINode::getPosition().x,
+                                  ofxNUINode::getPosition().y);
+    ofxUISuperCanvas::setDimensions(10, 10);
+    ofxUISuperCanvas::setFontSize(OFX_UI_FONT_SMALL, OFX_UI_FONT_SMALL_SIZE);
+    
+    
+    /* superCanvas = new ofxUISuperCanvas(getNodeLabel(), ofxNUINode::getPosition().x,
                                        ofxNUINode::getPosition().y, 10, 10,
-                                       OFX_UI_FONT_SMALL);
+                                       OFX_UI_FONT_SMALL); */
     
-    canvas->addWidgetDown(superCanvas);
+    canvas->addWidgetDown(this);
     
-    superCanvas->setAutoDraw(false);
+    ofxUISuperCanvas::setAutoDraw(false);
+    ofxUISuperCanvas::setMinified(true);
+    ofxUISuperCanvas::setVisible(false);
+    ofxUISuperCanvas::setTheme(0);
+    ofxUISuperCanvas::getCanvasTitle()->setAutoSize(true);
+
+    hideSuperCanvasTitle();
+    
+    /* superCanvas->setAutoDraw(false);
     superCanvas->setMinified(true);
     superCanvas->setVisible(false);
-    superCanvas->setTheme(0);
+    superCanvas->setTheme(0); */
     
     addWidgetsToSuperCanvas();
     
-    ofAddListener(superCanvas->newGUIEvent, this, &ofxNUIWidgetNode::widgetEventListener);
+    ofAddListener(ofxUISuperCanvas::newGUIEvent, this, &ofxNUIWidgetNode::widgetEventListener);
     
+}
+
+//--------------------------------------------------------------------------------//
+// HIDE SUPERCANVAS TITLE
+//--------------------------------------------------------------------------------//
+
+void ofxNUIWidgetNode::hideSuperCanvasTitle()
+{
+    ofxUISuperCanvas::getCanvasTitle()->setVisible(false);
+    ofxUISuperCanvas::autoSizeToFitWidgets();
 }
 
 //--------------------------------------------------------------------------------//
@@ -76,10 +101,9 @@ void ofxNUIWidgetNode::addWidgetsToSuperCanvas()
     
     for (int i=0; i < widgets.size(); i++) {
         widget = widgets.at(i);
-        superCanvas->addWidgetDown(widget);
+        //superCanvas->addWidgetDown(widget);
+        ofxUISuperCanvas::addWidgetDown(widget);
     }
-    
-    return;
     
 }
 
@@ -92,30 +116,39 @@ void ofxNUIWidgetNode::updateNode()
     
     ofxNUINode::updateNode();
     
-    if (!superCanvas) { return; }
+    if (!ofxUISuperCanvas::isVisible()) { return; }
     
     if (isActive()) {
-        superCanvas->setVisible(true);
+        ofxUISuperCanvas::setVisible(true);
+        ofxUISuperCanvas::setMinified(false);
+        ofxUISuperCanvas::autoSizeToFitWidgets();
+        /* superCanvas->setVisible(true);
         superCanvas->setMinified(false);
-        superCanvas->autoSizeToFitWidgets();
+        superCanvas->autoSizeToFitWidgets(); */
     }
     else if (isHighlighted()) {
-        superCanvas->setVisible(true);
-        superCanvas->setMinified(false);
+        ofxUISuperCanvas::setVisible(true);
+        ofxUISuperCanvas::setMinified(false);
+        /* superCanvas->setVisible(true);
+        superCanvas->setMinified(false); */
     }
     else if (getParentNode()){
         if (getParentNode()->isActive()) {
-            superCanvas->setVisible(true);
-            superCanvas->setMinified(true);
+            ofxUISuperCanvas::setVisible(true);
+            ofxUISuperCanvas::setMinified(true);
+            /* superCanvas->setVisible(true);
+            superCanvas->setMinified(true); */
         }
     }
     else {
-        superCanvas->setVisible(false);
+        ofxUISuperCanvas::setVisible(false);
+        ofxUISuperCanvas::setMinified(true);
+        //superCanvas->setVisible(false);
     }
     
-    updateSuperCanvas();
+    hideSuperCanvasTitle();
     
-    return;
+    updateSuperCanvas();
     
 }
 
@@ -128,25 +161,22 @@ void ofxNUIWidgetNode::setHighlight(bool _isHighlighted)
     
     ofxNUINode::setHighlight(_isHighlighted);
     
-    if (getParentNode()) {
-        if (getParentNode()->getParentNode()) {
-            if(getParentNode()->getParentNode()->isActive()){}
-        }
-        else if (!getParentNode()->isActive()) { return; }
+    if (!isHighlighted()) {
+        ofxUISuperCanvas::setMinified(true);
+        ofxUISuperCanvas::setVisible(false);
     }
-    
-    if (!superCanvas || !superCanvas->isVisible() || isActive()) { return; }
     
     else if (isHighlighted()) {
-        superCanvas->setMinified(false);
-        superCanvas->autoSizeToFitWidgets();
+        ofxUISuperCanvas::setMinified(false);
+        ofxUISuperCanvas::setVisible(true);
+        ofxUISuperCanvas::autoSizeToFitWidgets();
+
+        /* superCanvas->setMinified(false);
+        superCanvas->autoSizeToFitWidgets(); */
         updateSuperCanvas();
     }
-    else if (!isHighlighted()) {
-        superCanvas->setMinified(true);
-    }
     
-    return;
+    hideSuperCanvasTitle();
     
 }
 
@@ -157,7 +187,7 @@ void ofxNUIWidgetNode::setHighlight(bool _isHighlighted)
 void ofxNUIWidgetNode::updateSuperCanvas()
 {
 
-    if (!superCanvas) { return; }
+    if (!ofxUISuperCanvas::isVisible()) { return; }
     
     numOfWidgets = widgets.size();
     circumference = PI * getNodeRadius() * 2;
@@ -166,8 +196,6 @@ void ofxNUIWidgetNode::updateSuperCanvas()
     //updateSuperCanvasWidgetDimensions();
     //updateSuperCanvasDimensions();
     updateSuperCanvasPosition();
-    
-    return;
     
 }
 
@@ -250,10 +278,6 @@ void ofxNUIWidgetNode::updateSuperCanvasWidgetDimensions()
         
     }
     
-    
-    
-    return;
-    
 }
 
 //--------------------------------------------------------------------------------//
@@ -264,10 +288,9 @@ void ofxNUIWidgetNode::updateSuperCanvasDimensions()
 {
     
     if (isActive() || isHighlighted()) {
-        superCanvas->autoSizeToFitWidgets();
+        ofxUISuperCanvas::autoSizeToFitWidgets();
+        //superCanvas->autoSizeToFitWidgets();
     }
-    
-    return;
     
 }
 
@@ -278,12 +301,13 @@ void ofxNUIWidgetNode::updateSuperCanvasDimensions()
 void ofxNUIWidgetNode::updateSuperCanvasPosition()
 {
     
-    if (!superCanvas || !canvas || !cam) { return; }
+    if (!canvas || !cam) { return; }
     
     ofVec2f current = cam->worldToScreen(
                                 getPosition()+ofVec3f(getNodeRadius(),0,0) );
     
-    superCanvas->setPosition(current.x, current.y);
+    //superCanvas->setPosition(current.x, current.y);
+    ofxUISuperCanvas::setPosition(current.x, current.y);
     
     /* if (isActive() || isHighlighted()) {
         
@@ -305,8 +329,6 @@ void ofxNUIWidgetNode::updateSuperCanvasPosition()
         
     } */
     
-    return;
-    
 }
 
 //--------------------------------------------------------------------------------//
@@ -316,11 +338,10 @@ void ofxNUIWidgetNode::updateSuperCanvasPosition()
 void ofxNUIWidgetNode::drawSuperCanvas()
 {
     
-    if (!superCanvas || !canvas) { return; }
+    if (!canvas) { return; }
     
-    superCanvas->draw();
-    
-    return;
+    //superCanvas->draw();
+    ofxUISuperCanvas::draw();
     
 }
 
@@ -337,8 +358,6 @@ void ofxNUIWidgetNode::addWidgetSlider(string _name, float *_floatPtr,
     
     widgets.push_back(widget);
     
-    return;
-    
 }
 
 //--------------------------------------------------------------------------------//
@@ -351,8 +370,6 @@ void ofxNUIWidgetNode::addWidgetIntSlider(string _name, int *_intPtr, int _min, 
     widget = new ofxUIIntSlider(_name, _min, _max, _intPtr, SLIDER_WIDTH, SLIDER_HEIGHT);
     
     widgets.push_back(widget);
-    
-    return;
     
 }
 
@@ -376,8 +393,6 @@ void ofxNUIWidgetNode::addWidgetNumberDialer(string _name, float *_floatPtr,
     
     widgets.push_back(widget);
     
-    return;
-    
 }
 
 //--------------------------------------------------------------------------------//
@@ -395,8 +410,6 @@ void ofxNUIWidgetNode::addWidgetLabelButton(string _name)
     widget = labelButton;
     
     widgets.push_back(widget);
-    
-    return;
     
 }
 
@@ -417,8 +430,6 @@ void ofxNUIWidgetNode::addWidgetDropDownList(string _name, vector<string> _items
     
     widgets.push_back(widget);
     
-    return;
-    
 }
 
 //--------------------------------------------------------------------------------//
@@ -435,8 +446,6 @@ void ofxNUIWidgetNode::addWidgetTextInput(string _name, string _textstring)
     
     widgets.push_back(widget);
     
-    return;
-    
 }
 
 //--------------------------------------------------------------------------------//
@@ -451,8 +460,6 @@ void ofxNUIWidgetNode::addWidgetToggle(string _name, bool *_toggle)
     widget = toggle;
     
     widgets.push_back(widget);
-    
-    return;
     
 }
 
@@ -471,8 +478,6 @@ void ofxNUIWidgetNode::addWidgetEnvelopeEditor(string _name, ofxUIEnvelope *_env
     widget = envelopeEditor;
     
     widgets.push_back(widget);
-    
-    return;
     
 }
 
@@ -614,12 +619,6 @@ ofxUIToggle* ofxNUIWidgetNode::getToggle()
 {
     return toggle;
 }
-
-//--------------------------------------------------------------------------------//
-//
-//--------------------------------------------------------------------------------//
-
-
 
 //--------------------------------------------------------------------------------//
 //

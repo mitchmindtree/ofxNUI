@@ -85,6 +85,7 @@ public:
     
     virtual void init();
     void setupCanvasAndCamera(ofxUICanvas *_canvas, ofEasyCam *_cam);
+    void hideSuperCanvasTitle();
     void addWidgetsToSuperCanvas();
     void updateNode();
     void updateSuperCanvas();

@@ -69,10 +69,11 @@ void ofxNUIColorScheme::genAndSetColors()
 
 void ofxNUIColorScheme::genAndSetLineColorActive()
 {
-    red = baseRed;
-    grn = baseGrn * 1.5f;
-    blu = baseBlu;
-    alpha = baseAlpha;
+    red = ofClamp(baseRed, 0.0f, 254.0f);
+    grn = ofClamp(baseGrn*1.5f, 0.0f, 254.0f);
+    blu = ofClamp(baseBlu, 0.0f, 254.0f);
+    alpha = ofClamp(baseAlpha, 0.0f, 254.0f);
+    
     lineColorActive = ofColor(red, grn, blu, alpha);
 }
 
@@ -82,10 +83,10 @@ void ofxNUIColorScheme::genAndSetLineColorActive()
 
 void ofxNUIColorScheme::genAndSetLineColorActiveParent()
 {
-    red = baseRed * 0.5f;
-    grn = baseGrn * 0.8f;
-    blu = baseBlu;
-    alpha = baseAlpha;
+    red = ofClamp(baseRed*0.5f, 0.0f, 254.0f);
+    grn = ofClamp(baseGrn*0.8f, 0.0f, 254.0f);
+    blu = ofClamp(baseBlu, 0.0f, 254.0f);
+    alpha = ofClamp(baseAlpha, 0.0f, 254.0f);
     lineColorActiveParent = ofColor(red, grn, blu, baseAlpha);
 }
 
@@ -95,10 +96,10 @@ void ofxNUIColorScheme::genAndSetLineColorActiveParent()
 
 void ofxNUIColorScheme::genAndSetLineColorHighlighted()
 {
-    red = baseRed - 30;
-    grn = baseGrn - 30;
-    blu = baseBlu - 30;
-    red += (255 - red) * 0.75f;
+    red = ofClamp(baseRed-30.0f, 0.0f, 254.0f);
+    grn = ofClamp(baseGrn-30.0f, 0.0f, 254.0f);
+    blu = ofClamp(baseBlu-30.0f, 0.0f, 254.0f);
+    red += ofClamp((255 - red) * 0.75f, 0.0f, 254.0f);
     lineColorHighlighted = ofColor(red, grn, blu, 200);
 }
 
@@ -108,10 +109,10 @@ void ofxNUIColorScheme::genAndSetLineColorHighlighted()
 
 void ofxNUIColorScheme::genAndSetShapeColorActive()
 {
-    red = baseRed - 30;
-    grn = baseGrn + 40;
-    blu = baseBlu - 30;
-    alpha = baseAlpha;
+    red = ofClamp(baseRed - 30, 0.0f, 254.0f);
+    grn = ofClamp(baseGrn + 40, 0.0f, 254.0f);
+    blu = ofClamp(baseBlu - 30, 0.0f, 254.0f);
+    alpha = ofClamp(baseAlpha, 0.0f, 254.0f);
     shapeColorActive = ofColor(red, grn, blu, alpha);
 }
 
@@ -121,9 +122,9 @@ void ofxNUIColorScheme::genAndSetShapeColorActive()
 
 void ofxNUIColorScheme::genAndSetShapeColorActiveParent()
 {
-    red = baseRed * 0.5f;
-    grn = baseGrn - 20;
-    blu = baseBlu;
+    red = ofClamp(baseRed * 0.5f, 0.0f, 254.0f);
+    grn = ofClamp(baseGrn - 20, 0.0f, 254.0f);
+    blu = ofClamp(baseBlu, 0.0f, 254.0f);
     alpha = ofClamp(baseAlpha * 1.5f, 0, 254);
     shapeColorActiveParent = ofColor(red, grn, blu, alpha);
 }
@@ -134,10 +135,10 @@ void ofxNUIColorScheme::genAndSetShapeColorActiveParent()
 
 void ofxNUIColorScheme::genAndSetShapeColorHighlighted()
 {
-    red = baseRed + 40;
-    grn = baseGrn * 0.5f;
-    blu = baseBlu * 0.5f;
-    alpha = baseAlpha;
+    red = ofClamp(baseRed + 40, 0.0f, 254.0f);
+    grn = ofClamp(baseGrn * 0.5f, 0.0f, 254.0f);
+    blu = ofClamp(baseBlu * 0.5f, 0.0f, 254.0f);
+    alpha = ofClamp(baseAlpha, 0.0f, 254.0f);
     shapeColorHighlighted = ofColor(red, grn, blu, alpha);
 }
 

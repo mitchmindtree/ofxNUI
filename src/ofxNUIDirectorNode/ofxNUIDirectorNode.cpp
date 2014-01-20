@@ -268,7 +268,7 @@ bool ofxNUIDirectorNode::isMouseOnASuperCanvas()
     
     if (closestChild->getNodeType() == "ofxNUIWidgetNode") {
         widgetNode = dynamic_cast<ofxNUIWidgetNode*>(closestChild);
-        if (widgetNode->superCanvas->isHit(ofGetMouseX(), ofGetMouseY())) {
+        if (widgetNode->ofxUISuperCanvas::isHit(ofGetMouseX(), ofGetMouseY())) {
             cam.disableMouseInput();
             return true;
         }

@@ -72,6 +72,7 @@ void ofxNUINode::init()
     
     setActive(false);
     setHighlight(false);
+    
 }
 
 //--------------------------------------------------------------------------------//
