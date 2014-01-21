@@ -77,6 +77,18 @@ public:
     bool isMouseOnASuperCanvas();
     void findClosestChild();
     
+    void selectNode();
+    void selectParent();
+    void selectClosestChild();
+    
+    /* BaseApp Stuff */
+    void update();
+    void draw();
+    void keyPressed(int key);
+    void mouseMoved(int x, int y);
+    void mousePressed(int x, int y, int button);
+    void mouseReleased(int x, int y, int button);
+    
     /* Variable Declaration */
     
     bool positionIsTweening;

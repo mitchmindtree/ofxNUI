@@ -88,10 +88,12 @@ public:
     void hideSuperCanvasTitle();
     void addWidgetsToSuperCanvas();
     void updateNode();
+    void update();
     void updateSuperCanvas();
     void updateSuperCanvasWidgetDimensions();
     void updateSuperCanvasDimensions();
     void updateSuperCanvasPosition();
+    virtual void customDraw();
     void drawSuperCanvas();
     void setHighlight(bool _isHighlighted);
     virtual void widgetFunctions(string _widgetName){}

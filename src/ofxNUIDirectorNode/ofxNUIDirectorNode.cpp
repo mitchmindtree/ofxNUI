@@ -32,6 +32,11 @@
 void ofxNUIDirectorNode::init()
 {
     ofxNUINode::init();
+    positionDurationMS = 750;
+    targetDurationMS = 1000;
+    orientationDurationMS = 1000;
+    delayMS = 0;
+    mouseIsOnASuperCanvas = false;
 }
 
 //--------------------------------------------------------------------------------//
@@ -52,7 +57,7 @@ void ofxNUIDirectorNode::setup(vector<ofxNUINode *> _nodes)
     setupGL();
     setupCam();
     setupLight();
-    
+
     getChildren()->reserve(_nodes.size());
     for (int i=0; i < getChildren()->size(); i++) {
         addChild(_nodes.at(i));
@@ -316,6 +321,163 @@ void ofxNUIDirectorNode::findClosestChild()
         prevClosestChild = closestChild;
     }
 }
+
+//--------------------------------------------------------------------------------//
+// SELECT NODE
+//--------------------------------------------------------------------------------//
+
+void ofxNUIDirectorNode::selectNode()
+{
+    
+    ofVec2f mouse = ofVec2f(ofGetMouseX(), ofGetMouseY());
+    ofVec3f current = cam.worldToScreen(activeNode->ofNode::getPosition());
+    int distance = current.distance(mouse);
+    
+    /* Select the parent as active node */
+    if (distance < activeNode->getNodeRadius()*3.0f && activeNode->getParentNode()){
+        selectParent();
+        return;
+    }
+    
+    current = cam.worldToScreen(closestChild->ofNode::getPosition());
+    distance = current.distance(mouse);
+    
+    /* Select the child as active node */
+    if (distance < closestChild->getNodeRadius() * 3.0f) {
+        selectClosestChild();
+        return;
+    }
+    
+}
+
+//--------------------------------------------------------------------------------//
+// SELECT PARENT
+//--------------------------------------------------------------------------------//
+
+void ofxNUIDirectorNode::selectParent()
+{
+    activeNode->setParentAsActive();
+    prevActiveNode = activeNode;
+    activeNode = dynamic_cast<ofxNUINode*>(activeNode->getParentNode());
+    
+    moveCamToActive();
+}
+
+//--------------------------------------------------------------------------------//
+// SELECT CLOSEST CHILD
+//--------------------------------------------------------------------------------//
+
+void ofxNUIDirectorNode::selectClosestChild()
+{
+    activeNode->setChildAsActive(closestChild);
+    prevActiveNode = activeNode;
+    activeNode = closestChild;
+    
+    moveCamToActive();
+}
+
+//--------------------------------------------------------------------------------//
+// UPDATE
+//--------------------------------------------------------------------------------//
+
+void ofxNUIDirectorNode::update()
+{
+    if (!canvas->isVisible()) { return; }
+    
+    for (int i=0; i < getChildren()->size(); i++) {
+        getChildren()->at(i)->update();
+    }
+    
+    moveCamToActive();
+}
+
+//--------------------------------------------------------------------------------//
+// DRAW
+//--------------------------------------------------------------------------------//
+
+void ofxNUIDirectorNode::draw()
+{
+    if (!canvas->isVisible()) { return; }
+    
+    ofBackground(10);
+    
+    /* 3D node system with cam and lighting. */
+    ambientLight.enable();
+    cam.begin();
+    
+    if (activeNode->getParentNode()) {
+        activeNode->getParentNode()->customDraw();
+    }
+    else {
+        activeNode->customDraw();
+    }
+    
+    cam.end();
+    ambientLight.disable();
+    
+    /* 2D Widgets are drawn after 3D & cam. */
+    for (int i=0; i < getChildren()->size(); i++) {
+        getChildren()->at(i)->customDraw();
+    }
+}
+
+//--------------------------------------------------------------------------------//
+// KEY PRESSED
+//--------------------------------------------------------------------------------//
+
+
+
+//--------------------------------------------------------------------------------//
+// MOUSE MOVED
+//--------------------------------------------------------------------------------//
+
+void ofxNUIDirectorNode::mouseMoved(int x, int y )
+{
+    if (!canvas->isVisible()) { return; }
+    
+    if (!isMouseOnASuperCanvas()) {
+        findClosestChild();
+    }
+}
+
+//--------------------------------------------------------------------------------//
+// MOUSE PRESSED
+//--------------------------------------------------------------------------------//
+
+void ofxNUIDirectorNode::mousePressed(int x, int y, int button)
+{
+    if (!canvas->isVisible()) { return; }
+    stopCamTween();
+}
+
+//--------------------------------------------------------------------------------//
+// MOUSE RELEASED
+//--------------------------------------------------------------------------------//
+
+void ofxNUIDirectorNode::mouseReleased(int x, int y, int button)
+{
+    if (!isMouseOnASuperCanvas() && button == 0) {
+        selectNode();
+    }
+}
+
+//--------------------------------------------------------------------------------//
+//
+//--------------------------------------------------------------------------------//
+
+
+
+//--------------------------------------------------------------------------------//
+//
+//--------------------------------------------------------------------------------//
+
+
+
+//--------------------------------------------------------------------------------//
+//
+//--------------------------------------------------------------------------------//
+
+
 
 //--------------------------------------------------------------------------------//
 //
