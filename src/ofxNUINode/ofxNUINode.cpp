@@ -192,6 +192,8 @@ void ofxNUINode::updateNodeDepth()
         }
     }
     
+    /* cout << ofToString(getNodeLabel()) + " | depth = " + ofToString(depth) + " | depthFromActive = " + ofToString(depthFromActive) + " | depthFromHighlighted = " + ofToString(depthFromHighlighted) << endl; */
+    
 }
 
 //--------------------------------------------------------------------------------//
@@ -235,8 +237,6 @@ void ofxNUINode::updateNodePosition()
     /* Set node orientation and position */
     position += getParentNode()->getNodePosition();
     setOrientation(position);
-    //setPosition(position);
-    //setPositionTween(position);
     setNodePosition(position);
     
 }
@@ -751,7 +751,7 @@ void ofxNUINode::drawName()
     }
     
     ofSetColor(nameColor);
-    ofDrawBitmapString(nodeLabel,    getPosition().x + getNodeRadius() + 5,
+    ofDrawBitmapString(nodeLabel,   getPosition().x + getNodeRadius() + 5,
                                     getPosition().y,
                                     getPosition().z);
     
@@ -864,7 +864,7 @@ void ofxNUINode::setHighlight(bool _isHighlighted)
     
     highlight = _isHighlighted;
     
-    if (isHighlighted() == true) {
+    if (isHighlighted()) {
         depthFromHighlighted = 0;
         setHighlightDepth();
     }
@@ -881,7 +881,9 @@ void ofxNUINode::setHighlight(bool _isHighlighted)
 void ofxNUINode::setHighlightDepth()
 {
     
-    depthFromHighlighted = getParentNode()->depthFromHighlighted + 1;
+    if (!isHighlighted()) {
+        depthFromHighlighted = getParentNode()->depthFromHighlighted + 1;
+    }
     
     updateNodeColors();
     

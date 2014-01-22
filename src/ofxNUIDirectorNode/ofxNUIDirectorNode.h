@@ -82,25 +82,23 @@ public:
     void selectClosestChild();
     
     /* BaseApp Stuff */
-    void update();
-    void draw();
-    void keyPressed(int key);
-    void mouseMoved(int x, int y);
-    void mousePressed(int x, int y, int button);
-    void mouseReleased(int x, int y, int button);
+    virtual void update();
+    virtual void draw();
+    virtual void keyPressed(int key);
+    virtual void mouseMoved(int x, int y);
+    virtual void mousePressed(int x, int y, int button);
+    virtual void mouseReleased(int x, int y, int button);
     
     /* Variable Declaration */
     
     bool positionIsTweening;
     bool targetIsTweening;
-    bool orientationIsTweening;
     
     int distance;
     int smallestDistance;
     
     unsigned int positionDurationMS;
     unsigned int targetDurationMS;
-    unsigned int orientationDurationMS;
     unsigned int delayMS;
     
     bool mouseIsOnASuperCanvas;

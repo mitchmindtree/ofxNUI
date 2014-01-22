@@ -34,9 +34,12 @@ void ofxNUIDirectorNode::init()
     ofxNUINode::init();
     positionDurationMS = 750;
     targetDurationMS = 1000;
-    orientationDurationMS = 1000;
     delayMS = 0;
     mouseIsOnASuperCanvas = false;
+    activeNode == NULL;
+    prevActiveNode == NULL;
+    closestChild == NULL;
+    prevClosestChild == NULL;
 }
 
 //--------------------------------------------------------------------------------//
@@ -46,23 +49,25 @@ void ofxNUIDirectorNode::init()
 void ofxNUIDirectorNode::setup(vector<ofxNUINode *> _nodes)
 {
     
-    setNodeLabel(getName());
+    setNodeLabel(getNodeName());
     setActiveNode(this);
+    setPrevActiveNode(getActiveNode());
     setActive(true);
     setHighlight(false);
-    ofNode::setPosition(0.0f, 0.0f, 0.0f);
-    setColorScheme(&coreColorScheme);
-    setShapeType(OFXNUINODE_SHAPE_SPHERE);
-    setupCanvas();
+    setNodePosition(ofVec3f(0.0f, 0.0f, 0.0f));
     setupGL();
     setupCam();
     setupLight();
 
     getChildren()->reserve(_nodes.size());
-    for (int i=0; i < getChildren()->size(); i++) {
+    for (int i=0; i < _nodes.size(); i++) {
         addChild(_nodes.at(i));
     }
     
+    setColorScheme(&coreColorScheme);
+    setShapeType(OFXNUINODE_SHAPE_SPHERE);
+    setupCanvas();
+    updateNode();
     updateChildren();
     
 }
@@ -207,16 +212,26 @@ ofxNUINode* ofxNUIDirectorNode::getPrevClosestChild()
 
 void ofxNUIDirectorNode::moveCamToActive()
 {
+    positionDurationMS = 1000;
     
     tweenCamPosition.setParameters(1, easingQuad, ofxTween::easeOut,
-                                   cam.getPosition().x, activeNode->getNodePosition().x,
+                                   cam.getPosition().x,
+                                   activeNode->getNodePosition().x,
                                    positionDurationMS, delayMS);
     tweenCamPosition.addValue(cam.getPosition().y, activeNode->getNodePosition().y);
     tweenCamPosition.addValue(cam.getPosition().z, activeNode->getNodePosition().z
                               + (OFXNUINODE_LAYOUT_RADIUS * 1.8f));
     
+    /* cout << ofToString(activeNode->getNodePosition().x) + " "
+    + ofToString(activeNode->getNodePosition().y) + " "
+    + ofToString(activeNode->getNodePosition().z) << endl;
+    cout << ofToString(cam.getPosition().x) + " "
+    + ofToString(cam.getPosition().y) + " "
+    + ofToString(cam.getPosition().z) << endl; */
+    
     tweenCamTarget.setParameters(2, easingExpo, ofxTween::easeOut,
-                                 prevActiveNode->getPosition().x, activeNode->getNodePosition().x,
+                                 prevActiveNode->getPosition().x,
+                                 activeNode->getNodePosition().x,
                                  targetDurationMS, delayMS);
     tweenCamTarget.addValue(prevActiveNode->getPosition().y,
                             activeNode->getNodePosition().y);
@@ -238,16 +253,14 @@ void ofxNUIDirectorNode::moveCamToActive()
 void ofxNUIDirectorNode::updateCamTween()
 {
     if (positionIsTweening) {
-        ofVec3f camPosition = ofVec3f(tweenCamPosition.update(),
-                                      tweenCamPosition.getTarget(1),
-                                      tweenCamPosition.getTarget(2));
-        cam.setPosition(camPosition);
+        cam.setPosition(ofVec3f(tweenCamPosition.update(),
+                                tweenCamPosition.getTarget(1),
+                                tweenCamPosition.getTarget(2)));
     }
     if (targetIsTweening) {
-        ofVec3f camTarget = ofVec3f(tweenCamTarget.update(),
-                                    tweenCamTarget.getTarget(1),
-                                    tweenCamTarget.getTarget(2));
-        cam.setTarget(camTarget);
+        cam.setTarget(ofVec3f(tweenCamTarget.update(),
+                              tweenCamTarget.getTarget(1),
+                              tweenCamTarget.getTarget(2)));
     }
 }
 
@@ -357,8 +370,8 @@ void ofxNUIDirectorNode::selectNode()
 void ofxNUIDirectorNode::selectParent()
 {
     activeNode->setParentAsActive();
-    prevActiveNode = activeNode;
-    activeNode = dynamic_cast<ofxNUINode*>(activeNode->getParentNode());
+    setPrevActiveNode(getActiveNode());
+    setActiveNode(getActiveNode()->getParentNode());
     
     moveCamToActive();
 }
@@ -370,8 +383,8 @@ void ofxNUIDirectorNode::selectParent()
 void ofxNUIDirectorNode::selectClosestChild()
 {
     activeNode->setChildAsActive(closestChild);
-    prevActiveNode = activeNode;
-    activeNode = closestChild;
+    setPrevActiveNode(getActiveNode());
+    setActiveNode(getClosestChild());
     
     moveCamToActive();
 }
@@ -388,7 +401,7 @@ void ofxNUIDirectorNode::update()
         getChildren()->at(i)->update();
     }
     
-    moveCamToActive();
+    updateCamTween();
 }
 
 //--------------------------------------------------------------------------------//
@@ -414,18 +427,16 @@ void ofxNUIDirectorNode::draw()
     
     cam.end();
     ambientLight.disable();
-    
-    /* 2D Widgets are drawn after 3D & cam. */
-    for (int i=0; i < getChildren()->size(); i++) {
-        getChildren()->at(i)->customDraw();
-    }
 }
 
 //--------------------------------------------------------------------------------//
 // KEY PRESSED
 //--------------------------------------------------------------------------------//
 
-
+void ofxNUIDirectorNode::keyPressed(int key)
+{
+    
+}
 
 //--------------------------------------------------------------------------------//
 // MOUSE MOVED

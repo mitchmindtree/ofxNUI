@@ -97,9 +97,9 @@ void ofxNUIColorScheme::genAndSetLineColorActiveParent()
 void ofxNUIColorScheme::genAndSetLineColorHighlighted()
 {
     red = ofClamp(baseRed-30.0f, 0.0f, 254.0f);
+    red += ofClamp((255 - red) * 0.75f, 0.0f, 254.0f);
     grn = ofClamp(baseGrn-30.0f, 0.0f, 254.0f);
     blu = ofClamp(baseBlu-30.0f, 0.0f, 254.0f);
-    red += ofClamp((255 - red) * 0.75f, 0.0f, 254.0f);
     lineColorHighlighted = ofColor(red, grn, blu, 200);
 }
 
@@ -193,16 +193,16 @@ ofColor ofxNUIColorScheme::getLineColorActiveParent()
 
 ofColor ofxNUIColorScheme::getLineColorActiveDepth(int depthFromActive)
 {
-    if (depthFromActive > 0) {
+    if (depthFromActive >= 0) {
         luminanceReduction = 43 * depthFromActive;
     }
     else if (depthFromActive < 0) {
-        luminanceReduction = 120 * depthFromActive;
+        luminanceReduction = -120 * depthFromActive;
     }
     red = ofClamp(baseRed - luminanceReduction, 0, 254);
     grn = ofClamp(baseGrn - luminanceReduction, 0, 254);
     blu = ofClamp(baseBlu - luminanceReduction, 0, 254);
-    alpha = baseAlpha * 0.75f * (float)luminanceReduction / (float)255;
+    alpha = ofClamp(baseAlpha*0.75f*(float)luminanceReduction/(float)255, 0, 254);
     return ofColor(red, grn, blu, alpha);
 }
 
