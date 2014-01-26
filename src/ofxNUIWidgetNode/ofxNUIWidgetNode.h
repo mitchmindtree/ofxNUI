@@ -46,42 +46,27 @@
 #define WIDGET_VERTICAL_PADDING_ACTIVE 20
 #define WIDGET_VERTICAL_PADDING_HIGHLIGHTED 5
 
-class ofxUISuperCanvasHelper: public ofxUISuperCanvas {
-public:
-    ofxUISuperCanvasHelper(string _label = "WidgetNode",
-                           int _size = OFX_UI_FONT_MEDIUM)
-    : ofxUISuperCanvas(_label, _size) {}
-    virtual string& getSuperCanvasName() {}
-    string superCanvasName;
-    string& getName()
-    {
-        return getSuperCanvasName();
-    }
-    
-};
-
 /* Class */
 
-class ofxNUIWidgetNode : public ofxNUINode, public ofxUISuperCanvasHelper {
+class ofxNUIWidgetNode : public ofxNUINode {
     
 public:
     
     /* Constructors & Destructors */
     
-    ofxNUIWidgetNode(string _label = "WidgetNode",
+    ofxNUIWidgetNode(string _label = "ofxNUIWidgetNode",
                      int _size = OFX_UI_FONT_MEDIUM)
-    : ofxUISuperCanvasHelper(_label, _size), ofxNUINode() {
+    : ofxNUINode() {
         init();
     }
     
     ~ofxNUIWidgetNode() {
-        
+        delete superCanvas;
     }
     
     /* Functions */
     
     virtual string getNodeName() { return "ofxNUIWidgetNode"; }
-    virtual string& getSuperCanvasName() { return superCanvasName; }
     virtual string getNodeType() { return "ofxNUIWidgetNode"; }
     
     virtual void init();
@@ -94,7 +79,6 @@ public:
     void updateSuperCanvasWidgetDimensions();
     void updateSuperCanvasDimensions();
     void updateSuperCanvasPosition();
-    virtual void customDraw();
     void drawSuperCanvas();
     void setHighlight(bool _isHighlighted);
     virtual void widgetFunctions(string _widgetName){}
@@ -141,13 +125,14 @@ public:
     
     /* Class Instances */
     
+    ofxUISuperCanvas *superCanvas;
     vector<ofxUIWidget*> widgets;
+    
     ofxUISlider *slider;
     ofxUIIntSlider *intSlider;
     ofxUINumberDialer *numberDialer;
     ofxUILabelButton *labelButton;
     ofxUILabelToggle *labelToggle;
-    ofxUISuperCanvas *superCanvas;
     ofxUIWidget *widget;
     ofxUIEnvelopeEditor *envelopeEditor;
     ofxUIDropDownList *dropDownList;

@@ -81,6 +81,7 @@ void ofxNUIDirectorNode::setupCanvas()
     //canvas = new ofxUICanvas(0, 0, ofGetWidth(), ofGetHeight());
     canvas.setDimensions(ofGetWidth(), ofGetHeight());
     canvas.setName("CoreNodeCanvas");
+    canvas.setAutoDraw(false);
     canvas.setVisible(true);
     setCanvasForWidgetNodes(this);
 }
@@ -307,7 +308,7 @@ bool ofxNUIDirectorNode::isMouseOnASuperCanvas()
     
     if (closestChild->getNodeType() == "ofxNUIWidgetNode") {
         widgetNode = dynamic_cast<ofxNUIWidgetNode*>(closestChild);
-        if (widgetNode->ofxUISuperCanvas::isHit(ofGetMouseX(), ofGetMouseY())) {
+        if (widgetNode->getSuperCanvas()->isHit(ofGetMouseX(), ofGetMouseY())) {
             cam.disableMouseInput();
             return true;
         }
@@ -448,6 +449,10 @@ void ofxNUIDirectorNode::draw()
     
     cam.end();
     ambientLight.disable();
+    
+    /* 2D Widgets and SuperCanvas */
+    canvas.draw();
+    
 }
 
 //--------------------------------------------------------------------------------//
@@ -491,25 +496,6 @@ void ofxNUIDirectorNode::mouseReleased(int x, int y, int button)
     if (!isMouseOnASuperCanvas() && button == 0) {
         selectNode();
     }
-}
-
-//--------------------------------------------------------------------------------//
-// EXIT
-//--------------------------------------------------------------------------------//
-
-void ofxNUIDirectorNode::exit(ofxNUINode *_node)
-{
-    
-    for (int i=0; i < _node->getChildren()->size(); i++) {
-        exit(_node->getChildren()->at(i));
-    }
-    
-    if (_node->getNodeType() == "ofxNUIWidgetNode"
-        || _node->getNodeType() == "ofxNUIDirectorNode") {
-        widgetNode = dynamic_cast<ofxNUIWidgetNode*>(_node);
-        delete widgetNode->superCanvas;
-    }
-    
 }
 
 //--------------------------------------------------------------------------------//
