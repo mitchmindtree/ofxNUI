@@ -44,7 +44,8 @@ public:
     }
     
     ~ofxNUIDirectorNode(){
-        
+        //exit(this);
+        //delete canvas;
     }
     
     /* Functions */
@@ -89,6 +90,8 @@ public:
     virtual void mousePressed(int x, int y, int button);
     virtual void mouseReleased(int x, int y, int button);
     
+    void exit(ofxNUINode *_node);
+    
     /* Variable Declaration */
     
     bool positionIsTweening;
@@ -115,7 +118,7 @@ public:
     
     /* Class Instances */
     
-    ofxUICanvas *canvas;
+    ofxUICanvas canvas;
     
     ofxNUINode *activeNode;
     ofxNUINode *prevActiveNode;

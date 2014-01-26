@@ -57,6 +57,7 @@ public:
     {
         return getSuperCanvasName();
     }
+    
 };
 
 /* Class */
@@ -73,7 +74,7 @@ public:
         init();
     }
     
-    ~ofxNUIWidgetNode(){
+    ~ofxNUIWidgetNode() {
         
     }
     

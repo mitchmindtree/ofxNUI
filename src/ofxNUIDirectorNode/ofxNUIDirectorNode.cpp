@@ -78,9 +78,10 @@ void ofxNUIDirectorNode::setup(vector<ofxNUINode *> _nodes)
 
 void ofxNUIDirectorNode::setupCanvas()
 {
-    canvas = new ofxUICanvas(0, 0, ofGetWidth(), ofGetHeight());
-    canvas->setName("CoreNodeCanvas");
-    canvas->setVisible(true);
+    //canvas = new ofxUICanvas(0, 0, ofGetWidth(), ofGetHeight());
+    canvas.setDimensions(ofGetWidth(), ofGetHeight());
+    canvas.setName("CoreNodeCanvas");
+    canvas.setVisible(true);
     setCanvasForWidgetNodes(this);
 }
 
@@ -92,7 +93,7 @@ void ofxNUIDirectorNode::setCanvasForWidgetNodes(ofxNUINode *_node)
 {
     if (_node->getNodeType() == "ofxNUIWidgetNode") {
         widgetNode = dynamic_cast<ofxNUIWidgetNode*>(_node);
-        widgetNode->setupCanvasAndCamera(canvas, &cam);
+        widgetNode->setupCanvasAndCamera(&canvas, &cam);
     }
     for (int i=0; i < _node->getChildren()->size(); i++) {
         setCanvasForWidgetNodes(_node->getChildren()->at(i));
@@ -213,30 +214,50 @@ ofxNUINode* ofxNUIDirectorNode::getPrevClosestChild()
 void ofxNUIDirectorNode::moveCamToActive()
 {
     positionDurationMS = 1000;
+    int posX, posY, posZ;
+    int tarX, tarY, tarZ;
+    
+    if (activeNode->getNodeLayout() == OFXNUINODE_LAYOUT_LIST) {
+        posX = activeNode->getNodePosition().x + OFXNUINODE_LAYOUT_RADIUS;
+        posY = activeNode->getNodePosition().y - OFXNUINODE_LAYOUT_RADIUS * 0.5f;
+        posZ = activeNode->getNodePosition().z + (OFXNUINODE_LAYOUT_RADIUS * 1.8f);
+        tarX = posX;
+        tarY = posY;
+        tarZ = activeNode->getNodePosition().z;
+    }
+    
+    /* else if (activeNode->getNodeType() == "ofxNUIWidgetNode") {
+        widgetNode = dynamic_cast<ofxNUIWidgetNode*>(activeNode);
+        posX = widgetNode->ofxUISuperCanvas::getRect()->getHalfWidth()
+                + widgetNode->ofxUISuperCanvas::getRect()->getX();
+        posY = -widgetNode->ofxUISuperCanvas::getRect()->getHalfHeight()
+                - widgetNode->ofxUISuperCanvas::getRect()->getY();
+        posZ = activeNode->getNodePosition().z + (OFXNUINODE_LAYOUT_RADIUS * 1.8f);
+        tarX = posX;
+        tarY = posY;
+        tarZ = activeNode->getNodePosition().z;
+    } */
+    
+    else if (getChildren()) {
+        posX = activeNode->getNodePosition().x;
+        posY = activeNode->getNodePosition().y;
+        posZ = activeNode->getNodePosition().z + (OFXNUINODE_LAYOUT_RADIUS * 1.8f);
+        tarX = activeNode->getNodePosition().x;
+        tarY = activeNode->getNodePosition().y;
+        tarZ = activeNode->getNodePosition().z;
+    }
     
     tweenCamPosition.setParameters(1, easingQuad, ofxTween::easeOut,
-                                   cam.getPosition().x,
-                                   activeNode->getNodePosition().x,
+                                   cam.getPosition().x, posX,
                                    positionDurationMS, delayMS);
-    tweenCamPosition.addValue(cam.getPosition().y, activeNode->getNodePosition().y);
-    tweenCamPosition.addValue(cam.getPosition().z, activeNode->getNodePosition().z
-                              + (OFXNUINODE_LAYOUT_RADIUS * 1.8f));
-    
-    /* cout << ofToString(activeNode->getNodePosition().x) + " "
-    + ofToString(activeNode->getNodePosition().y) + " "
-    + ofToString(activeNode->getNodePosition().z) << endl;
-    cout << ofToString(cam.getPosition().x) + " "
-    + ofToString(cam.getPosition().y) + " "
-    + ofToString(cam.getPosition().z) << endl; */
+    tweenCamPosition.addValue(cam.getPosition().y, posY);
+    tweenCamPosition.addValue(cam.getPosition().z, posZ);
     
     tweenCamTarget.setParameters(2, easingExpo, ofxTween::easeOut,
-                                 prevActiveNode->getPosition().x,
-                                 activeNode->getNodePosition().x,
+                                 prevActiveNode->getPosition().x, tarX,
                                  targetDurationMS, delayMS);
-    tweenCamTarget.addValue(prevActiveNode->getPosition().y,
-                            activeNode->getNodePosition().y);
-    tweenCamTarget.addValue(prevActiveNode->getPosition().z,
-                            activeNode->getNodePosition().z);
+    tweenCamTarget.addValue(prevActiveNode->getPosition().y, tarY);
+    tweenCamTarget.addValue(prevActiveNode->getPosition().z, tarZ);
     
     tweenCamPosition.start();
     tweenCamTarget.start();
@@ -395,7 +416,7 @@ void ofxNUIDirectorNode::selectClosestChild()
 
 void ofxNUIDirectorNode::update()
 {
-    if (!canvas->isVisible()) { return; }
+    if (!canvas.isVisible()) { return; }
     
     for (int i=0; i < getChildren()->size(); i++) {
         getChildren()->at(i)->update();
@@ -410,7 +431,7 @@ void ofxNUIDirectorNode::update()
 
 void ofxNUIDirectorNode::draw()
 {
-    if (!canvas->isVisible()) { return; }
+    if (!canvas.isVisible()) { return; }
     
     ofBackground(10);
     
@@ -444,7 +465,7 @@ void ofxNUIDirectorNode::keyPressed(int key)
 
 void ofxNUIDirectorNode::mouseMoved(int x, int y )
 {
-    if (!canvas->isVisible()) { return; }
+    if (!canvas.isVisible()) { return; }
     
     if (!isMouseOnASuperCanvas()) {
         findClosestChild();
@@ -457,7 +478,7 @@ void ofxNUIDirectorNode::mouseMoved(int x, int y )
 
 void ofxNUIDirectorNode::mousePressed(int x, int y, int button)
 {
-    if (!canvas->isVisible()) { return; }
+    if (!canvas.isVisible()) { return; }
     stopCamTween();
 }
 
@@ -473,10 +494,23 @@ void ofxNUIDirectorNode::mouseReleased(int x, int y, int button)
 }
 
 //--------------------------------------------------------------------------------//
-//
+// EXIT
 //--------------------------------------------------------------------------------//
 
-
+void ofxNUIDirectorNode::exit(ofxNUINode *_node)
+{
+    
+    for (int i=0; i < _node->getChildren()->size(); i++) {
+        exit(_node->getChildren()->at(i));
+    }
+    
+    if (_node->getNodeType() == "ofxNUIWidgetNode"
+        || _node->getNodeType() == "ofxNUIDirectorNode") {
+        widgetNode = dynamic_cast<ofxNUIWidgetNode*>(_node);
+        delete widgetNode->superCanvas;
+    }
+    
+}
 
 //--------------------------------------------------------------------------------//
 //

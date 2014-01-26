@@ -38,6 +38,7 @@ void ofxNUIWidgetNode::init()
     widget = NULL;
     canvas = NULL;
     numOfWidgets = 0;
+    superCanvas = this;
 }
 
 //--------------------------------------------------------------------------------//
