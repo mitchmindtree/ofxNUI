@@ -29,15 +29,15 @@
 // INITIALISE
 //--------------------------------------------------------------------------------//
 
-void ofxNUIWidgetNode::init()
+void ofxNUIWidgetNode::nodeInit()
 {
     slider = NULL;
     numberDialer = NULL;
     labelButton = NULL;
     widget = NULL;
     canvas = NULL;
+    cam = NULL;
     numOfWidgets = 0;
-    superCanvas = new ofxUISuperCanvas(getNodeName(), OFX_UI_FONT_MEDIUM);
 }
 
 //--------------------------------------------------------------------------------//
@@ -105,7 +105,7 @@ void ofxNUIWidgetNode::updateNode()
     
     ofxNUINode::updateNode();
     
-    if (!getSuperCanvas()->isVisible()) { return; }
+    //if (!getSuperCanvas()->isVisible()) { return; }
     
     if (isActive()) {
         getSuperCanvas()->setVisible(true);
@@ -142,7 +142,7 @@ void ofxNUIWidgetNode::setHighlight(bool _isHighlighted)
     
     ofxNUINode::setHighlight(_isHighlighted);
     
-    if (!isHighlighted()) {
+    if (!isHighlighted() && !isActive()) {
         getSuperCanvas()->setMinified(true);
         getSuperCanvas()->setVisible(false);
     }
@@ -156,6 +156,28 @@ void ofxNUIWidgetNode::setHighlight(bool _isHighlighted)
     
     hideSuperCanvasTitle();
     
+}
+
+//--------------------------------------------------------------------------------//
+// SET CHILD AS ACTIVE
+//--------------------------------------------------------------------------------//
+
+void ofxNUIWidgetNode::setChildAsActive(ofxNUINode *_child)
+{
+    ofxNUINode::setChildAsActive(_child);
+    getSuperCanvas()->setVisible(false);
+    getSuperCanvas()->setMinified(true);
+}
+
+//--------------------------------------------------------------------------------//
+// SET PARENT AS ACTIVE
+//--------------------------------------------------------------------------------//
+
+void ofxNUIWidgetNode::setParentAsActive()
+{
+    ofxNUINode::setParentAsActive();
+    getSuperCanvas()->setVisible(false);
+    getSuperCanvas()->setMinified(true);
 }
 
 //--------------------------------------------------------------------------------//
@@ -399,6 +421,7 @@ void ofxNUIWidgetNode::addWidgetTextInput(string _name, string _textstring)
     
     textInput = new ofxUITextInput(_name, _textstring, TEXT_INPUT_WIDTH);
     textInput->setTriggerOnClick(false);
+    textInput->setAutoClear(false);
     
     widget = textInput;
     

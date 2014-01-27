@@ -29,9 +29,9 @@
 // INITIATE
 //--------------------------------------------------------------------------------//
 
-void ofxNUIDirectorNode::init()
+void ofxNUIDirectorNode::nodeInit()
 {
-    ofxNUINode::init();
+    ofxNUINode::nodeInit();
     positionDurationMS = 750;
     targetDurationMS = 1000;
     delayMS = 0;
@@ -49,7 +49,7 @@ void ofxNUIDirectorNode::init()
 void ofxNUIDirectorNode::setup(vector<ofxNUINode *> _nodes)
 {
     
-    setNodeLabel(getNodeName());
+    setNodeLabel(getName());
     setActiveNode(this);
     setPrevActiveNode(getActiveNode());
     setActive(true);
@@ -227,17 +227,17 @@ void ofxNUIDirectorNode::moveCamToActive()
         tarZ = activeNode->getNodePosition().z;
     }
     
-    /* else if (activeNode->getNodeType() == "ofxNUIWidgetNode") {
+    else if (activeNode->getNodeType() == "ofxNUIWidgetNode") {
         widgetNode = dynamic_cast<ofxNUIWidgetNode*>(activeNode);
-        posX = widgetNode->ofxUISuperCanvas::getRect()->getHalfWidth()
-                + widgetNode->ofxUISuperCanvas::getRect()->getX();
-        posY = -widgetNode->ofxUISuperCanvas::getRect()->getHalfHeight()
-                - widgetNode->ofxUISuperCanvas::getRect()->getY();
+        posX = activeNode->getNodePosition().x
+                + widgetNode->getSuperCanvas()->getRect()->getHalfWidth() * 0.8f;
+        posY = activeNode->getNodePosition().y
+                - widgetNode->getSuperCanvas()->getRect()->getHalfHeight() * 0.8f;
         posZ = activeNode->getNodePosition().z + (OFXNUINODE_LAYOUT_RADIUS * 1.8f);
         tarX = posX;
         tarY = posY;
         tarZ = activeNode->getNodePosition().z;
-    } */
+    }
     
     else if (getChildren()) {
         posX = activeNode->getNodePosition().x;

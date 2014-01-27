@@ -57,8 +57,14 @@ public:
     ofxNUIWidgetNode(string _label = "ofxNUIWidgetNode",
                      int _size = OFX_UI_FONT_MEDIUM)
     : ofxNUINode() {
-        init();
+        nodeInit();
+        superCanvas = new ofxUISuperCanvas(getName(), OFX_UI_FONT_MEDIUM);
     }
+    
+    /* ofxNUIWidgetNode(const ofxNUIWidgetNode& other) {
+        init();
+        superCanvas = new ofxUISuperCanvas(*other.superCanvas);
+    } */
     
     ~ofxNUIWidgetNode() {
         delete superCanvas;
@@ -66,10 +72,10 @@ public:
     
     /* Functions */
     
-    virtual string getNodeName() { return "ofxNUIWidgetNode"; }
+    virtual string getName() { return "ofxNUIWidgetNode"; }
     virtual string getNodeType() { return "ofxNUIWidgetNode"; }
     
-    virtual void init();
+    virtual void nodeInit();
     void setupCanvasAndCamera(ofxUICanvas *_canvas, ofEasyCam *_cam);
     void hideSuperCanvasTitle();
     void addWidgetsToSuperCanvas();
@@ -80,6 +86,8 @@ public:
     void updateSuperCanvasDimensions();
     void updateSuperCanvasPosition();
     void drawSuperCanvas();
+    void setChildAsActive(ofxNUINode *_child);
+    void setParentAsActive();
     void setHighlight(bool _isHighlighted);
     virtual void widgetFunctions(string _widgetName){}
     

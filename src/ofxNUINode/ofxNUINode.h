@@ -63,7 +63,7 @@ public:
     /* Constructors & Destructors */
     
     ofxNUINode(){
-        init();
+        nodeInit();
     }
     
     ~ofxNUINode(){
@@ -73,10 +73,10 @@ public:
     /* Functions */
     
     /* Name */
-    virtual string getNodeName() { return "ofxNUINode"; }
+    virtual string getName() { return "ofxNUINode"; }
     virtual string getNodeType() { return "ofxNUINode"; }
     
-    void init();
+    void nodeInit();
     
     /* Add Children */
     void addChild(ofxNUINode *_child);
@@ -138,8 +138,8 @@ public:
     /* Conditions (Active) */
     bool isActive();
     void setActive(bool _isActive);
-    void setChildAsActive(ofxNUINode *_child);
-    void setParentAsActive();
+    virtual void setChildAsActive(ofxNUINode *_child);
+    virtual void setParentAsActive();
     void toggleActive();
     
     /* Conditions (Highlighted) */

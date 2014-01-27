@@ -29,7 +29,7 @@
 // INITIALISE
 //--------------------------------------------------------------------------------//
 
-void ofxNUINode::init()
+void ofxNUINode::nodeInit()
 {
     nodeLabel = "";
     siblingPerc = 0.0f;
@@ -87,7 +87,7 @@ void ofxNUINode::addChild(ofxNUINode *_child)
     for (int i=0; i < children.size(); i++) {
         child = children.at(i);
         if (child->nodeLabel == "") {
-            child->setNodeLabel(child->getNodeName());
+            child->setNodeLabel(child->getName());
         }
         child->setNumOfSiblings(children.size());
         child->setSiblingPerc(i);
@@ -103,7 +103,7 @@ void ofxNUINode::addChild(ofxNUINode *_child)
 
 void ofxNUINode::addChild(ofxNUINode *_child, int num)
 {
-    _child->setNodeLabel(_child->getNodeName() + " " + ofToString(num));
+    _child->setNodeLabel(_child->getName() + " " + ofToString(num));
     addChild(_child);
 }
 

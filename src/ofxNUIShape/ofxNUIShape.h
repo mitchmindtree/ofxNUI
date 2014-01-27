@@ -48,7 +48,7 @@ public:
     
     /* Functions */
     
-    string getNodeName() { return "ofxNUIShape"; }
+    string getName() { return "ofxNUIShape"; }
     
     virtual void init();
     virtual void setup(float _radius, ofVec3f _position, ofColor _color);

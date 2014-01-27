@@ -40,20 +40,19 @@ public:
     /* Constructors & Destructors */
     
     ofxNUIDirectorNode(){
-        
+        nodeInit();
     }
     
     ~ofxNUIDirectorNode(){
-        //exit(this);
-        //delete canvas;
+        
     }
     
     /* Functions */
     
-    virtual string getNodeName() { return "ofxNUIDirectorNode"; }
+    virtual string getName() { return "ofxNUIDirectorNode"; }
     virtual string getNodeType() { return "ofxNUIDirectorNode"; }
     
-    void init();
+    void nodeInit();
     virtual void setup(vector<ofxNUINode*> _nodes);
     void setupCanvas();
     void setCanvasForWidgetNodes(ofxNUINode *_node);
