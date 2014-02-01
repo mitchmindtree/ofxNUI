@@ -78,11 +78,9 @@ void ofxNUIDirectorNode::setup(vector<ofxNUINode *> _nodes)
 
 void ofxNUIDirectorNode::setupCanvas()
 {
-    //canvas = new ofxUICanvas(0, 0, ofGetWidth(), ofGetHeight());
-    canvas.setDimensions(ofGetWidth(), ofGetHeight());
+    canvas.autoSizeToFitWidgets();
     canvas.setName("CoreNodeCanvas");
     canvas.setAutoDraw(false);
-    canvas.setVisible(true);
     setCanvasForWidgetNodes(this);
 }
 
@@ -451,7 +449,7 @@ void ofxNUIDirectorNode::draw()
     ambientLight.disable();
     
     /* 2D Widgets and SuperCanvas */
-    canvas.draw();
+    //canvas.draw();
     
 }
 

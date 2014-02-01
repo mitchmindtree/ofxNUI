@@ -33,7 +33,7 @@
 
 /* Class */
 
-class ofxNUIDirectorNode : public ofxNUIWidgetNode {
+class ofxNUIDirectorNode : public ofxNUINode {
     
 public:
     

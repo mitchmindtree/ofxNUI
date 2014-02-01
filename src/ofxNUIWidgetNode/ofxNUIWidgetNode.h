@@ -55,20 +55,9 @@ public:
     /* Constructors & Destructors */
     
     ofxNUIWidgetNode(string _label = "ofxNUIWidgetNode",
-                     int _size = OFX_UI_FONT_MEDIUM)
-    : ofxNUINode() {
-        nodeInit();
-        superCanvas = new ofxUISuperCanvas(getName(), OFX_UI_FONT_MEDIUM);
-    }
-    
-    /* ofxNUIWidgetNode(const ofxNUIWidgetNode& other) {
-        init();
-        superCanvas = new ofxUISuperCanvas(*other.superCanvas);
-    } */
-    
-    ~ofxNUIWidgetNode() {
-        delete superCanvas;
-    }
+                     int _size = OFX_UI_FONT_MEDIUM);
+    ofxNUIWidgetNode(const ofxNUIWidgetNode& other);
+    ~ofxNUIWidgetNode();
     
     /* Functions */
     

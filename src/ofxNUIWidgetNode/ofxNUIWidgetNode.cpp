@@ -26,6 +26,45 @@
 #include "ofxNUIWidgetNode.h"
 
 //--------------------------------------------------------------------------------//
+// CONSTRUCTORS / DESTRUCTORS
+//--------------------------------------------------------------------------------//
+
+ofxNUIWidgetNode::ofxNUIWidgetNode(string _label, int _size) : ofxNUINode()
+{
+    nodeInit();
+    superCanvas = new ofxUISuperCanvas(getName(), OFX_UI_FONT_MEDIUM);
+}
+
+ofxNUIWidgetNode::ofxNUIWidgetNode(const ofxNUIWidgetNode& other)
+: numOfWidgets(other.numOfWidgets),
+circumference(other.circumference),
+highlightWidth(other.highlightWidth),
+highlightHeight(other.highlightHeight),
+highlightHeightMax(other.highlightHeightMax),
+ddlActiveItem(other.ddlActiveItem),
+intPtr(other.intPtr),
+floatPtr(other.floatPtr),
+doublePtr(other.doublePtr),
+boolPtr(other.boolPtr),
+cam(other.cam),
+canvas(other.canvas)
+{
+    if (other.superCanvas) {
+        superCanvas = new ofxUISuperCanvas(*other.superCanvas);
+    }
+    else {
+        superCanvas = NULL;
+    }
+}
+
+ofxNUIWidgetNode::~ofxNUIWidgetNode()
+{
+    if (superCanvas) {
+        delete superCanvas;
+    }
+}
+
+//--------------------------------------------------------------------------------//
 // INITIALISE
 //--------------------------------------------------------------------------------//
 
@@ -37,6 +76,7 @@ void ofxNUIWidgetNode::nodeInit()
     widget = NULL;
     canvas = NULL;
     cam = NULL;
+    superCanvas = NULL;
     numOfWidgets = 0;
 }
 
@@ -333,8 +373,8 @@ void ofxNUIWidgetNode::addWidgetSlider(string _name, float *_floatPtr,
                                  float _min, float _max)
 {
     
-    widget = new ofxUISlider(SLIDER_WIDTH, SLIDER_HEIGHT, _min, _max, _floatPtr,
-                             _name);
+    widget = new ofxUISlider(_name, _min, _max, *_floatPtr,
+                             SLIDER_WIDTH, SLIDER_HEIGHT);
     
     widgets.push_back(widget);
     
@@ -397,11 +437,12 @@ void ofxNUIWidgetNode::addWidgetLabelButton(string _name)
 // ADD DROP DOWN LIST
 //--------------------------------------------------------------------------------//
 
-void ofxNUIWidgetNode::addWidgetDropDownList(string _name, vector<string> _items, string _activeItem)
+void ofxNUIWidgetNode::addWidgetDropDownList(string _name, vector<string> _items,
+                                             string _activeItem)
 {
     
     dropDownList = new ofxUIDropDownList(DDL_WIDTH,_name,_items, OFX_UI_FONT_SMALL);
-    dropDownList->setShowCurrentSelected(true);
+    //dropDownList->setShowCurrentSelected(true);
     dropDownList->setAllowMultiple(false);
     dropDownList->setAutoClose(true);
     dropDownList->activateToggle(_activeItem);
