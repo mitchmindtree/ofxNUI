@@ -121,16 +121,15 @@ void ofxNUINode::addChild(ofxNUINode *_child, string _name)
 
 void ofxNUINode::addChildList(vector<ofxNUINode *> childList, string _name)
 {
-    
-    ofxNUINode *listParent = new ofxNUINode;
-    listParent->setNodeLabel(_name);
-    addChild(listParent);
-    
-    listParent->getChildren()->reserve(childList.size());
+    listParents.reserve(20);
+    listParents.push_back(ofxNUINode());
+    child = &listParents.at(listParents.size()-1);
+    child->setNodeLabel(_name);
+    addChild(child);
+    child->getChildren()->reserve(childList.size());
     for (int i=0; i < childList.size(); i++) {
-        listParent->addChild(childList.at(i), i+1);
+        child->addChild(childList.at(i), i+1);
     }
-    
 }
 
 //--------------------------------------------------------------------------------//
@@ -247,7 +246,6 @@ void ofxNUINode::updateNodePosition()
 
 void ofxNUINode::updateNodePositionRadial()
 {
-    //algebraic.setup();
     float x = getSiblingPerc() + getParentNode()->getSiblingPerc() + 0.25f;
     position = ofVec3f(sin(TWO_PI * x) * positionRadius,
                        cos(TWO_PI * x) * positionRadius,
@@ -430,6 +428,18 @@ void ofxNUINode::updateNameColor()
 }
 
 //--------------------------------------------------------------------------------//
+// SET CAMERA
+//--------------------------------------------------------------------------------//
+
+void ofxNUINode::setCamera(ofEasyCam *_cam)
+{
+    cam = _cam;
+    for (int i=0; i < getChildren()->size(); i++) {
+        getChildren()->at(i)->setCamera(cam);
+    }
+}
+
+//--------------------------------------------------------------------------------//
 // SET COLOR SCHEME
 //--------------------------------------------------------------------------------//
 
@@ -540,6 +550,15 @@ void ofxNUINode::setSiblingPerc(int _siblingNum)
 vector<ofxNUINode*>* ofxNUINode::getChildren()
 {
     return &children;
+}
+
+//--------------------------------------------------------------------------------//
+// GET CHILD LIST PARENTS
+//--------------------------------------------------------------------------------//
+
+vector<ofxNUINode>* ofxNUINode::getListParents()
+{
+    return &listParents;
 }
 
 //--------------------------------------------------------------------------------//

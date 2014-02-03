@@ -43,10 +43,6 @@ public:
         nodeInit();
     }
     
-    ~ofxNUIDirectorNode(){
-        
-    }
-    
     /* Functions */
     
     virtual string getName() { return "ofxNUIDirectorNode"; }
@@ -54,8 +50,6 @@ public:
     
     void nodeInit();
     virtual void setup(vector<ofxNUINode*> _nodes);
-    void setupCanvas();
-    void setCanvasForWidgetNodes(ofxNUINode *_node);
     void setupGL();
     void setupCam();
     void setupLight();
@@ -114,8 +108,6 @@ public:
     ofxEasingQuad easingQuad;
     
     /* Class Instances */
-    
-    ofxUICanvas canvas;
     
     ofxNUINode *activeNode;
     ofxNUINode *prevActiveNode;

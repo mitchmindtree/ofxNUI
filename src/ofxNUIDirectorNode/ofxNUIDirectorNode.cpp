@@ -40,6 +40,14 @@ void ofxNUIDirectorNode::nodeInit()
     prevActiveNode == NULL;
     closestChild == NULL;
     prevClosestChild == NULL;
+    
+    setActiveNode(this);
+    setPrevActiveNode(getActiveNode());
+    setActive(true);
+    setHighlight(false);
+    setNodePosition(ofVec3f(0.0f, 0.0f, 0.0f));
+    setupGL();
+    setupLight();
 }
 
 //--------------------------------------------------------------------------------//
@@ -48,55 +56,17 @@ void ofxNUIDirectorNode::nodeInit()
 
 void ofxNUIDirectorNode::setup(vector<ofxNUINode *> _nodes)
 {
-    
-    setNodeLabel(getName());
-    setActiveNode(this);
-    setPrevActiveNode(getActiveNode());
-    setActive(true);
-    setHighlight(false);
-    setNodePosition(ofVec3f(0.0f, 0.0f, 0.0f));
-    setupGL();
-    setupCam();
-    setupLight();
-
     getChildren()->reserve(_nodes.size());
     for (int i=0; i < _nodes.size(); i++) {
         addChild(_nodes.at(i));
     }
-    
+    setNodeLabel(getName());
     setColorScheme(&coreColorScheme);
     setShapeType(OFXNUINODE_SHAPE_SPHERE);
-    setupCanvas();
+    setupCam();
+    setCamera(&cam);
     updateNode();
     updateChildren();
-    
-}
-
-//--------------------------------------------------------------------------------//
-// SETUP CANVAS
-//--------------------------------------------------------------------------------//
-
-void ofxNUIDirectorNode::setupCanvas()
-{
-    canvas.autoSizeToFitWidgets();
-    canvas.setName("CoreNodeCanvas");
-    canvas.setAutoDraw(false);
-    setCanvasForWidgetNodes(this);
-}
-
-//--------------------------------------------------------------------------------//
-// SET CANVAS FOR WIDGET NODES
-//--------------------------------------------------------------------------------//
-
-void ofxNUIDirectorNode::setCanvasForWidgetNodes(ofxNUINode *_node)
-{
-    if (_node->getNodeType() == "ofxNUIWidgetNode") {
-        widgetNode = dynamic_cast<ofxNUIWidgetNode*>(_node);
-        widgetNode->setupCanvasAndCamera(&canvas, &cam);
-    }
-    for (int i=0; i < _node->getChildren()->size(); i++) {
-        setCanvasForWidgetNodes(_node->getChildren()->at(i));
-    }
 }
 
 //--------------------------------------------------------------------------------//
@@ -415,7 +385,6 @@ void ofxNUIDirectorNode::selectClosestChild()
 
 void ofxNUIDirectorNode::update()
 {
-    if (!canvas.isVisible()) { return; }
     
     for (int i=0; i < getChildren()->size(); i++) {
         getChildren()->at(i)->update();
@@ -430,7 +399,6 @@ void ofxNUIDirectorNode::update()
 
 void ofxNUIDirectorNode::draw()
 {
-    if (!canvas.isVisible()) { return; }
     
     ofBackground(10);
     
@@ -468,8 +436,6 @@ void ofxNUIDirectorNode::keyPressed(int key)
 
 void ofxNUIDirectorNode::mouseMoved(int x, int y )
 {
-    if (!canvas.isVisible()) { return; }
-    
     if (!isMouseOnASuperCanvas()) {
         findClosestChild();
     }
@@ -481,7 +447,6 @@ void ofxNUIDirectorNode::mouseMoved(int x, int y )
 
 void ofxNUIDirectorNode::mousePressed(int x, int y, int button)
 {
-    if (!canvas.isVisible()) { return; }
     stopCamTween();
 }
 

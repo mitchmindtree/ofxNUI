@@ -56,8 +56,6 @@ public:
     
     ofxNUIWidgetNode(string _label = "ofxNUIWidgetNode",
                      int _size = OFX_UI_FONT_MEDIUM);
-    ofxNUIWidgetNode(const ofxNUIWidgetNode& other);
-    ~ofxNUIWidgetNode();
     
     /* Functions */
     
@@ -65,7 +63,8 @@ public:
     virtual string getNodeType() { return "ofxNUIWidgetNode"; }
     
     virtual void nodeInit();
-    void setupCanvasAndCamera(ofxUICanvas *_canvas, ofEasyCam *_cam);
+    void setCamera(ofEasyCam *_cam);
+    void setupSuperCanvas();
     void hideSuperCanvasTitle();
     void addWidgetsToSuperCanvas();
     void updateNode();
@@ -122,7 +121,7 @@ public:
     
     /* Class Instances */
     
-    ofxUISuperCanvas *superCanvas;
+    ofxUISuperCanvas superCanvas;
     vector<ofxUIWidget*> widgets;
     
     ofxUISlider *slider;
@@ -137,7 +136,6 @@ public:
     ofxUIToggle *toggle;
     
     ofEasyCam *cam;
-    ofxUICanvas *canvas;
     
 };
 

@@ -66,10 +66,6 @@ public:
         nodeInit();
     }
     
-    ~ofxNUINode(){
-        
-    }
-    
     /* Functions */
     
     /* Name */
@@ -99,6 +95,7 @@ public:
     void updateShapeColor(); /* Copy from glNode */
     
     /* Set Stuff */
+    virtual void setCamera(ofEasyCam *_cam);
     void setColorScheme(ofxNUIColorScheme *_colorScheme);
     void setNodeLayout(int _layout);
     void setNodeLabel(string _name);
@@ -112,6 +109,7 @@ public:
     
     /* Return Stuff */
     vector<ofxNUINode*>* getChildren();
+    vector<ofxNUINode>* getListParents();
     int getDepth();
     int getDepthFromActive();
     int getDepthFromHighlighted();
@@ -202,11 +200,13 @@ private:
     
     /* Class Pointers */
     
+    ofEasyCam *cam;
     //ofxNUIShape *shape;
     ofxNUIColorScheme *colorScheme;
     ofxNUINode *parentNode;
     ofxNUINode *child;
     vector<ofxNUINode*> children;
+    vector<ofxNUINode> listParents;
     
 };
 
