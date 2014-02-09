@@ -46,8 +46,6 @@ void ofxNUIDirectorNode::nodeInit()
     setActive(true);
     setHighlight(false);
     setNodePosition(ofVec3f(0.0f, 0.0f, 0.0f));
-    setupGL();
-    setupLight();
 }
 
 //--------------------------------------------------------------------------------//
@@ -63,10 +61,12 @@ void ofxNUIDirectorNode::setup(vector<ofxNUINode *> _nodes)
     setNodeLabel(getName());
     setColorScheme(&coreColorScheme);
     setShapeType(OFXNUINODE_SHAPE_SPHERE);
+    setupGL();
+    setupLight();
     setupCam();
-    setCamera(&cam);
     updateNode();
     updateChildren();
+    setCamera(&cam);
 }
 
 //--------------------------------------------------------------------------------//
@@ -198,9 +198,9 @@ void ofxNUIDirectorNode::moveCamToActive()
     else if (activeNode->getNodeType() == "ofxNUIWidgetNode") {
         widgetNode = dynamic_cast<ofxNUIWidgetNode*>(activeNode);
         posX = activeNode->getNodePosition().x
-                + widgetNode->getSuperCanvas()->getRect()->getHalfWidth() * 0.8f;
+                + widgetNode->getSuperCanvas()->getRect()->getHalfWidth() * 0.65f;
         posY = activeNode->getNodePosition().y
-                - widgetNode->getSuperCanvas()->getRect()->getHalfHeight() * 0.8f;
+                - widgetNode->getSuperCanvas()->getRect()->getHalfHeight() * 0.65f;
         posZ = activeNode->getNodePosition().z + (OFXNUINODE_LAYOUT_RADIUS * 1.8f);
         tarX = posX;
         tarY = posY;
@@ -416,8 +416,7 @@ void ofxNUIDirectorNode::draw()
     cam.end();
     ambientLight.disable();
     
-    /* 2D Widgets and SuperCanvas */
-    //canvas.draw();
+    activeNode->customDraw2D();
     
 }
 

@@ -67,6 +67,8 @@ void ofxNUINode::nodeInit()
     shapeColor = baseShapeColor;
     nameColor = baseNameColor;
     
+    cam = NULL;
+    
     //active = false;
     //highlight = false;
     
@@ -82,8 +84,13 @@ void ofxNUINode::nodeInit()
 void ofxNUINode::addChild(ofxNUINode *_child)
 {
     
-    children.push_back(_child);
-    
+    child = _child;
+    if (child->getParentNode()) {
+        cloneChildren.reserve(10);
+        cloneChildren.push_back(ofxNUINode(*child));
+        child = &cloneChildren.at(cloneChildren.size()-1);
+    }
+    children.push_back(child);
     for (int i=0; i < children.size(); i++) {
         child = children.at(i);
         if (child->nodeLabel == "") {
@@ -93,8 +100,6 @@ void ofxNUINode::addChild(ofxNUINode *_child)
         child->setSiblingPerc(i);
         child->setParentNode(this);
     }
-    
-    /* Set new positions for children */
     updateChildren();
     
 }
@@ -119,12 +124,13 @@ void ofxNUINode::addChild(ofxNUINode *_child, string _name)
 // ADD CHILD LIST
 //--------------------------------------------------------------------------------//
 
-void ofxNUINode::addChildList(vector<ofxNUINode *> childList, string _name)
+void ofxNUINode::addChildList(vector<ofxNUINode *> childList, string _name, int _layout)
 {
     listParents.reserve(20);
     listParents.push_back(ofxNUINode());
     child = &listParents.at(listParents.size()-1);
     child->setNodeLabel(_name);
+    child->setNodeLayout(_layout);
     addChild(child);
     child->getChildren()->reserve(childList.size());
     for (int i=0; i < childList.size(); i++) {
@@ -271,7 +277,6 @@ void ofxNUINode::updateNodePositionSpiral()
     else {
         updateNodePositionRadial();
     }
-    
 }
 
 //--------------------------------------------------------------------------------//
@@ -544,6 +549,15 @@ void ofxNUINode::setSiblingPerc(int _siblingNum)
 }
 
 //--------------------------------------------------------------------------------//
+// GET CAMERA
+//--------------------------------------------------------------------------------//
+
+ofEasyCam* ofxNUINode::getCam()
+{
+    return cam;
+}
+
+//--------------------------------------------------------------------------------//
 // GET CHILDREN
 //--------------------------------------------------------------------------------//
 
@@ -741,18 +755,26 @@ void ofxNUINode::customDraw()
 }
 
 //--------------------------------------------------------------------------------//
+// CUSTOM DRAW NODE
+//--------------------------------------------------------------------------------//
+
+void ofxNUINode::customDraw2D()
+{
+    for (int i=0; i < getChildren()->size(); i++) {
+        getChildren()->at(i)->customDraw2D();
+    }
+}
+
+//--------------------------------------------------------------------------------//
 // DRAW LINE
 //--------------------------------------------------------------------------------//
 
 void ofxNUINode::drawLine()
 {
-    
-    /* If there is parent... */
     if (getParentNode()) {
         ofSetColor(lineColor);
         line.draw();
     }
-    
 }
 
 //--------------------------------------------------------------------------------//

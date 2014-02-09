@@ -78,7 +78,8 @@ public:
     void addChild(ofxNUINode *_child);
     void addChild(ofxNUINode *_child, int num);
     void addChild(ofxNUINode *_child, string _name);
-    void addChildList(vector<ofxNUINode*> childList, string _name);
+    void addChildList(vector<ofxNUINode*> childList, string _name,
+                      int _layout = OFXNUINODE_LAYOUT_RADIAL);
     
     /* Update When A New Node is Activated */
     void updateChildren();
@@ -108,6 +109,7 @@ public:
     void setSiblingPerc(int _siblingNum);
     
     /* Return Stuff */
+    ofEasyCam* getCam();
     vector<ofxNUINode*>* getChildren();
     vector<ofxNUINode>* getListParents();
     int getDepth();
@@ -128,7 +130,8 @@ public:
     void updateTween();
     
     /* Draw */
-    virtual void customDraw();
+    virtual void customDraw();      // Is called automatically by ofNode.
+    virtual void customDraw2D();    // Is called by ofxNUIDirectorNode
     void drawLine();
     void drawName();
     void drawShape();
@@ -207,6 +210,7 @@ private:
     ofxNUINode *child;
     vector<ofxNUINode*> children;
     vector<ofxNUINode> listParents;
+    vector<ofxNUINode> cloneChildren;
     
 };
 

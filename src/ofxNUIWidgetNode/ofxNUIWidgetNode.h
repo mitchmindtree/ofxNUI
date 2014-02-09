@@ -65,15 +65,12 @@ public:
     virtual void nodeInit();
     void setCamera(ofEasyCam *_cam);
     void setupSuperCanvas();
-    void hideSuperCanvasTitle();
-    void addWidgetsToSuperCanvas();
     void updateNode();
     void update();
     void updateSuperCanvas();
     void updateSuperCanvasWidgetDimensions();
-    void updateSuperCanvasDimensions();
     void updateSuperCanvasPosition();
-    void drawSuperCanvas();
+    void customDraw2D();
     void setChildAsActive(ofxNUINode *_child);
     void setParentAsActive();
     void setHighlight(bool _isHighlighted);
@@ -82,15 +79,14 @@ public:
     void widgetEventListener(ofxUIEventArgs &e);
     
     /* Add widgets */
-    void addWidgetSlider(string _name, float *_floatPtr, float _min, float _max);
-    void addWidgetIntSlider(string _name, int *_intPtr, int _min, int _max);
-    void addWidgetNumberDialer(string _name, float *_floatPtr, float _min, float _max, int _precision);
-    void addWidgetLabelButton(string _name);
-    void addWidgetDropDownList(string _name, vector<string> _items, string _activeItem);
-    void addWidgetTextInput(string _name, string _textstring);
-    void addWidgetToggle(string _name, bool *_toggle);
-    void addWidgetEnvelopeEditor(string _name, ofxUIEnvelope *_envelope,
-                                 bool _isFreq);
+    ofxUISlider* addWidgetSlider(string _name, float *_value, float _min, float _max);
+    ofxUIIntSlider* addWidgetIntSlider(string _name, int *_value, int _min, int _max);
+    ofxUINumberDialer* addWidgetNumberDialer(string _name, float *_floatPtr, float _min, float _max, int _precision);
+    ofxUILabelButton* addWidgetLabelButton(string _name);
+    ofxUIDropDownList* addWidgetDropDownList(string _name, vector<string> _items, string _activeItem);
+    ofxUITextInput* addWidgetTextInput(string _name, string _textstring);
+    ofxUIToggle* addWidgetToggle(string _name, bool *_toggle);
+    ofxUIEnvelopeEditor* addWidgetEnvelopeEditor(string _name, ofxUIEnvelope *_envelope, bool _isFreq);
     
     ofxUISuperCanvas *getSuperCanvas();
     ofxUIWidget* getWidget();
@@ -134,8 +130,6 @@ public:
     ofxUIDropDownList *dropDownList;
     ofxUITextInput *textInput;
     ofxUIToggle *toggle;
-    
-    ofEasyCam *cam;
     
 };
 

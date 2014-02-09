@@ -44,8 +44,17 @@ void ofxNUIWidgetNode::nodeInit()
     numberDialer = NULL;
     labelButton = NULL;
     widget = NULL;
-    cam = NULL;
     numOfWidgets = 0;
+    getSuperCanvas()->setAutoDraw(false);
+    getSuperCanvas()->setAutoUpdate(false);
+    getSuperCanvas()->setUseHeader(false);
+    getSuperCanvas()->setTheme(0);
+    getSuperCanvas()->setMinified(true);
+    getSuperCanvas()->setVisible(false);
+    getSuperCanvas()->setGlobalSliderHeight(SLIDER_HEIGHT);
+    getSuperCanvas()->setFontSize(OFX_UI_FONT_SMALL, OFX_UI_FONT_SMALL_SIZE);
+    ofAddListener(getSuperCanvas()->newGUIEvent, this,
+                  &ofxNUIWidgetNode::widgetEventListener);
 }
 
 //--------------------------------------------------------------------------------//
@@ -54,50 +63,8 @@ void ofxNUIWidgetNode::nodeInit()
 
 void ofxNUIWidgetNode::setCamera(ofEasyCam *_cam)
 {
-    
-    cam = _cam;
-    
-    getSuperCanvas()->setPosition(ofxNUINode::getPosition().x,
-                                  ofxNUINode::getPosition().y);
-    getSuperCanvas()->setDimensions(10, 10);
-    getSuperCanvas()->setFontSize(OFX_UI_FONT_SMALL, OFX_UI_FONT_SMALL_SIZE);
-    
-    getSuperCanvas()->setAutoDraw(false);
-    getSuperCanvas()->setMinified(true);
-    getSuperCanvas()->setVisible(false);
-    getSuperCanvas()->setTheme(0);
-    getSuperCanvas()->getCanvasTitle()->setAutoSize(true);
-
-    hideSuperCanvasTitle();
-    
-    addWidgetsToSuperCanvas();
-    
-    ofAddListener(getSuperCanvas()->newGUIEvent, this, &ofxNUIWidgetNode::widgetEventListener);
-    
-    ofxNUINode::setCamera(cam);
-    
-}
-
-//--------------------------------------------------------------------------------//
-// HIDE SUPERCANVAS TITLE
-//--------------------------------------------------------------------------------//
-
-void ofxNUIWidgetNode::hideSuperCanvasTitle()
-{
-    getSuperCanvas()->getCanvasTitle()->setVisible(false);
-    getSuperCanvas()->autoSizeToFitWidgets();
-}
-
-//--------------------------------------------------------------------------------//
-// ADD WIDGETS TO CANVAS
-//--------------------------------------------------------------------------------//
-
-void ofxNUIWidgetNode::addWidgetsToSuperCanvas()
-{
-    for (int i=0; i < widgets.size(); i++) {
-        widget = widgets.at(i);
-        getSuperCanvas()->addWidgetDown(widget);
-    }
+    ofxNUINode::setCamera(_cam);
+    updateSuperCanvasPosition();
 }
 
 //--------------------------------------------------------------------------------//
@@ -117,19 +84,12 @@ void ofxNUIWidgetNode::updateNode()
     else if (isHighlighted()) {
         getSuperCanvas()->setVisible(true);
         getSuperCanvas()->setMinified(false);
-    }
-    else if (getParentNode()){
-        if (getParentNode()->isActive()) {
-            getSuperCanvas()->setVisible(true);
-            getSuperCanvas()->setMinified(true);
-        }
+        getSuperCanvas()->autoSizeToFitWidgets();
     }
     else {
         getSuperCanvas()->setVisible(false);
         getSuperCanvas()->setMinified(true);
     }
-    
-    hideSuperCanvasTitle();
     
     updateSuperCanvas();
     
@@ -150,13 +110,11 @@ void ofxNUIWidgetNode::setHighlight(bool _isHighlighted)
     }
     
     else if (isHighlighted()) {
-        getSuperCanvas()->setMinified(false);
         getSuperCanvas()->setVisible(true);
-        getSuperCanvas()->autoSizeToFitWidgets();
+        getSuperCanvas()->setMinified(false);
         updateSuperCanvas();
+        getSuperCanvas()->autoSizeToFitWidgets();
     }
-    
-    hideSuperCanvasTitle();
     
 }
 
@@ -189,7 +147,10 @@ void ofxNUIWidgetNode::setParentAsActive()
 void ofxNUIWidgetNode::update()
 {
     ofxNUINode::update();
-    updateSuperCanvas();
+    if (getSuperCanvas()->isVisible()) {
+        updateSuperCanvas();
+        getSuperCanvas()->update();
+    }
 }
 
 //--------------------------------------------------------------------------------//
@@ -198,15 +159,11 @@ void ofxNUIWidgetNode::update()
 
 void ofxNUIWidgetNode::updateSuperCanvas()
 {
-
-    if (!getSuperCanvas()->isVisible()) { return; }
-    
     numOfWidgets = widgets.size();
     circumference = PI * getNodeRadius() * 2;
     highlightWidth = circumference * getSiblingPerc();
     
     updateSuperCanvasPosition();
-    
 }
 
 //--------------------------------------------------------------------------------//
@@ -291,178 +248,117 @@ void ofxNUIWidgetNode::updateSuperCanvasWidgetDimensions()
 }
 
 //--------------------------------------------------------------------------------//
-// UPDATE SUPERCANVAS DIMENSIONS
-//--------------------------------------------------------------------------------//
-
-void ofxNUIWidgetNode::updateSuperCanvasDimensions()
-{
-    if (isActive() || isHighlighted()) {
-        getSuperCanvas()->autoSizeToFitWidgets();
-    }
-}
-
-//--------------------------------------------------------------------------------//
 // UPDATE WIDGET POSITIONS
 //--------------------------------------------------------------------------------//
 
 void ofxNUIWidgetNode::updateSuperCanvasPosition()
 {
-    
-    if (!cam) { return; }
-    
-    ofVec2f current = cam->worldToScreen(
-                                getPosition()+ofVec3f(getNodeRadius(),0,0) );
-    
+    if (!getCam()) { return; }
+    ofVec2f current = getCam()->worldToScreen(
+                getPosition()+ofVec3f(getNodeRadius(),-getNodeRadius()/2.0f,0) );
     getSuperCanvas()->setPosition(current.x, current.y);
-    
 }
 
 //--------------------------------------------------------------------------------//
 // DRAW SUPER CANVAS
 //--------------------------------------------------------------------------------//
 
-void ofxNUIWidgetNode::drawSuperCanvas()
+void ofxNUIWidgetNode::customDraw2D()
 {
-    if (!getSuperCanvas()->isVisible()) { return; }
-    //getSuperCanvas()->draw();
+    ofxNUINode::customDraw2D();
+    if (getSuperCanvas()->isVisible()) {
+        getSuperCanvas()->draw();
+    }
 }
 
 //--------------------------------------------------------------------------------//
 // ADD WIDGET SLIDER
 //--------------------------------------------------------------------------------//
 
-void ofxNUIWidgetNode::addWidgetSlider(string _name, float *_floatPtr,
+ofxUISlider* ofxNUIWidgetNode::addWidgetSlider(string _name, float *_value,
                                  float _min, float _max)
 {
-    
-    widget = new ofxUISlider(_name, _min, _max, *_floatPtr,
-                             SLIDER_WIDTH, SLIDER_HEIGHT);
-    
-    widgets.push_back(widget);
-    
+    return getSuperCanvas()->addSlider(_name, _min, _max, _value, SLIDER_WIDTH,
+                                       SLIDER_HEIGHT);
 }
 
-//--------------------------------------------------------------------------------//
-// ADD WIDGET INT SLIDER
-//--------------------------------------------------------------------------------//
-
-void ofxNUIWidgetNode::addWidgetIntSlider(string _name, int *_intPtr, int _min, int _max)
+ofxUIIntSlider* ofxNUIWidgetNode::addWidgetIntSlider(string _name, int *_value, int _min, int _max)
 {
-    
-    widget = new ofxUIIntSlider(_name, _min, _max, _intPtr, SLIDER_WIDTH, SLIDER_HEIGHT);
-    
-    widgets.push_back(widget);
-    
+    getSuperCanvas()->addWidgetDown(intSlider = new ofxUIIntSlider
+                        (_name, _min, _max, _value, SLIDER_WIDTH, SLIDER_HEIGHT));
+    return intSlider;
 }
 
 //--------------------------------------------------------------------------------//
 // ADD NUMBER DIALER
 //--------------------------------------------------------------------------------//
 
-void ofxNUIWidgetNode::addWidgetNumberDialer(string _name, float *_floatPtr,
+ofxUINumberDialer* ofxNUIWidgetNode::addWidgetNumberDialer(string _name, float *_floatPtr,
                                        float _min, float _max, int _precision)
 {
-    
-    /* First, add label 'header' with dialer name */
-    widget = new ofxUILabel(_name, OFX_UI_FONT_SMALL);
-    widgets.push_back(widget);
-    
-    /* Then add number dialer... */
-    numberDialer = new ofxUINumberDialer(_min, _max, _floatPtr, _precision, _name,
-                                         OFX_UI_FONT_SMALL);
-    
-    widget = numberDialer;
-    
-    widgets.push_back(widget);
-    
+    getSuperCanvas()->addWidgetDown(new ofxUILabel(_name,OFX_UI_FONT_SMALL));
+    return getSuperCanvas()->addNumberDialer(_name, _min, _max, _floatPtr,
+                                             _precision);
 }
 
 //--------------------------------------------------------------------------------//
 // ADD WIDGET LABEL BUTTON
 //--------------------------------------------------------------------------------//
 
-void ofxNUIWidgetNode::addWidgetLabelButton(string _name)
+ofxUILabelButton* ofxNUIWidgetNode::addWidgetLabelButton(string _name)
 {
-    
     bool tempBool = false;
-    
-    labelButton = new ofxUILabelButton(_name, tempBool, BUTTON_WIDTH, BUTTON_HEIGHT, OFX_UI_FONT_SMALL, false);
+    labelButton = getSuperCanvas()->addLabelButton(_name, tempBool, BUTTON_WIDTH, BUTTON_HEIGHT, OFX_UI_FONT_SMALL, false);
     labelButton->setLabelVisible(true);
-    
-    widget = labelButton;
-    
-    widgets.push_back(widget);
-    
+    return labelButton;
 }
 
 //--------------------------------------------------------------------------------//
 // ADD DROP DOWN LIST
 //--------------------------------------------------------------------------------//
 
-void ofxNUIWidgetNode::addWidgetDropDownList(string _name, vector<string> _items,
+ofxUIDropDownList* ofxNUIWidgetNode::addWidgetDropDownList(string _name, vector<string> _items,
                                              string _activeItem)
 {
-    
-    dropDownList = new ofxUIDropDownList(DDL_WIDTH,_name,_items, OFX_UI_FONT_SMALL);
-    //dropDownList->setShowCurrentSelected(true);
+    getSuperCanvas()->addWidgetDown(dropDownList = new ofxUIDropDownList(DDL_WIDTH,_name,_items, OFX_UI_FONT_SMALL));
     dropDownList->setAllowMultiple(false);
     dropDownList->setAutoClose(true);
     dropDownList->activateToggle(_activeItem);
-    
-    widget = dropDownList;
-    
-    widgets.push_back(widget);
-    
+    return dropDownList;
 }
 
 //--------------------------------------------------------------------------------//
 // ADD TEXT INPUT
 //--------------------------------------------------------------------------------//
 
-void ofxNUIWidgetNode::addWidgetTextInput(string _name, string _textstring)
+ofxUITextInput* ofxNUIWidgetNode::addWidgetTextInput(string _name, string _textstring)
 {
-    
-    textInput = new ofxUITextInput(_name, _textstring, TEXT_INPUT_WIDTH);
+    getSuperCanvas()->addWidgetDown(textInput = new ofxUITextInput(_name, _textstring, TEXT_INPUT_WIDTH));
     textInput->setTriggerOnClick(false);
     textInput->setAutoClear(false);
-    
-    widget = textInput;
-    
-    widgets.push_back(widget);
-    
+    return textInput;
 }
 
 //--------------------------------------------------------------------------------//
 // ADD TOGGLE
 //--------------------------------------------------------------------------------//
 
-void ofxNUIWidgetNode::addWidgetToggle(string _name, bool *_toggle)
+ofxUIToggle* ofxNUIWidgetNode::addWidgetToggle(string _name, bool *_toggle)
 {
-    
-    toggle = new ofxUIToggle(_name, _toggle, TOGGLE_DIMENSION, TOGGLE_DIMENSION);
-    
-    widget = toggle;
-    
-    widgets.push_back(widget);
-    
+    return getSuperCanvas()->addToggle(_name, _toggle, TOGGLE_DIMENSION,
+                                       TOGGLE_DIMENSION);
 }
 
 //--------------------------------------------------------------------------------//
 // ADD ENVELOPE EDITOR
 //--------------------------------------------------------------------------------//
 
-void ofxNUIWidgetNode::addWidgetEnvelopeEditor(string _name, ofxUIEnvelope *_envelope,
-                                         bool _isFreq)
+ofxUIEnvelopeEditor* ofxNUIWidgetNode::addWidgetEnvelopeEditor(string _name,ofxUIEnvelope*_envelope, bool _isFreq)
 {
-    
-    envelopeEditor = new ofxUIEnvelopeEditor(_name, _envelope,ENVELOPE_EDITOR_WIDTH,
-                                  ENVELOPE_EDITOR_HEIGHT, 0.0f, 0.0f);
+    getSuperCanvas()->addWidgetDown(envelopeEditor = new ofxUIEnvelopeEditor
+    (_name, _envelope,ENVELOPE_EDITOR_WIDTH, ENVELOPE_EDITOR_HEIGHT, 0.0f, 0.0f));
     envelopeEditor->isFrequency = _isFreq;
-    
-    widget = envelopeEditor;
-    
-    widgets.push_back(widget);
-    
+    return envelopeEditor;
 }
 
 //--------------------------------------------------------------------------------//
@@ -490,8 +386,8 @@ void ofxNUIWidgetNode::addWidgetEnvelopeEditor(string _name, ofxUIEnvelope *_env
 void ofxNUIWidgetNode::widgetEventListener(ofxUIEventArgs &e)
 {
     
-    for (int i=0; i < widgets.size(); i++) {
-        widget = widgets.at(i);
+    for (int i=0; i < getSuperCanvas()->getWidgets().size(); i++) {
+        widget = getSuperCanvas()->getWidgets().at(i);
         
         if(e.widget->getName() == widget->getName()){
             
