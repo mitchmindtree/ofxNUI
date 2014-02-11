@@ -32,6 +32,7 @@
 #include "ofxNUINode.h"
 #include "ofxUI.h"
 
+#define INIT_CANVAS_DIMENSIONS 200
 #define WIDGET_SPACER 20
 #define SLIDER_WIDTH 100
 #define SLIDER_HEIGHT 20
@@ -88,7 +89,7 @@ public:
     ofxUIToggle* addWidgetToggle(string _name, bool *_toggle);
     ofxUIEnvelopeEditor* addWidgetEnvelopeEditor(string _name, ofxUIEnvelope *_envelope, bool _isFreq);
     
-    ofxUISuperCanvas *getSuperCanvas();
+    ofxUISuperCanvas* getCanvas();
     ofxUIWidget* getWidget();
     ofxUISlider* getSlider();
     ofxUINumberDialer* getNumberDialer();
@@ -108,17 +109,10 @@ public:
     float highlightHeightMax;
     string ddlActiveItem;
     
-    /* Variable Instances */
-    
-    int *intPtr;
-    float *floatPtr;
-    double *doublePtr;
-    bool *boolPtr;
-    
     /* Class Instances */
     
-    ofxUISuperCanvas superCanvas;
-    vector<ofxUIWidget*> widgets;
+    ofxUISuperCanvas canvas;
+    //vector<ofxUIWidget*> widgets;
     
     ofxUISlider *slider;
     ofxUIIntSlider *intSlider;

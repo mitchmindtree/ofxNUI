@@ -39,9 +39,7 @@ public:
     
     /* Constructors & Destructors */
     
-    ofxNUIDirectorNode(){
-        nodeInit();
-    }
+    ofxNUIDirectorNode();
     
     /* Functions */
     

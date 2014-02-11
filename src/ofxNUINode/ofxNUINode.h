@@ -62,9 +62,7 @@ public:
     
     /* Constructors & Destructors */
     
-    ofxNUINode(){
-        nodeInit();
-    }
+    ofxNUINode();
     
     /* Functions */
     
@@ -91,9 +89,9 @@ public:
     void updateNodePositionList();
     void updateNodePositionGrid();
     void updateNodeColors();
-    void updateLineColor(); /* Copy from glNode */
-    void updateNameColor(); /* Copy from glNode */
-    void updateShapeColor(); /* Copy from glNode */
+    void updateLineColor();
+    void updateNameColor();
+    void updateShapeColor();
     
     /* Set Stuff */
     virtual void setCamera(ofEasyCam *_cam);
@@ -182,24 +180,9 @@ private:
     ofxNUISphere sphere;
     ofPolyline line;
     
-    int luminanceReduction;
     ofColor lineColor;
     ofColor shapeColor;
     ofColor nameColor;
-    
-    ofColor baseLineColor;
-    ofColor baseShapeColor;
-    ofColor baseNameColor;
-    
-    int red;
-    int grn;
-    int blu;
-    int alpha;
-    
-    int baseRed;
-    int baseGrn;
-    int baseBlu;
-    int baseAlpha;
     
     /* Class Pointers */
     
