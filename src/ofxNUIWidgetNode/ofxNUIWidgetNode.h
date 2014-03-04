@@ -53,10 +53,9 @@ class ofxNUIWidgetNode : public ofxNUINode {
     
 public:
     
-    /* Constructors & Destructors */
+    /* Constructor */
     
-    ofxNUIWidgetNode(string _label = "ofxNUIWidgetNode",
-                     int _size = OFX_UI_FONT_MEDIUM);
+    ofxNUIWidgetNode(string _label = "ofxNUIWidgetNode", int _size = OFX_UI_FONT_MEDIUM);
     
     /* Functions */
     
@@ -65,7 +64,7 @@ public:
     
     virtual void nodeInit();
     void setCamera(ofEasyCam *_cam);
-    void setupSuperCanvas();
+    void addListeners();
     void updateNode();
     void update();
     void updateSuperCanvas();
@@ -102,6 +101,7 @@ public:
     
     /* Variable Declaration */
     
+    ofxUISuperCanvas canvas;
     int numOfWidgets;
     float circumference;
     float highlightWidth;
@@ -110,9 +110,6 @@ public:
     string ddlActiveItem;
     
     /* Class Instances */
-    
-    ofxUISuperCanvas canvas;
-    //vector<ofxUIWidget*> widgets;
     
     ofxUISlider *slider;
     ofxUIIntSlider *intSlider;

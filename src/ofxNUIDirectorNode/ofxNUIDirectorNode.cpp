@@ -27,23 +27,29 @@
 
 //------------------------------
 
-ofxNUIDirectorNode::ofxNUIDirectorNode(){
-    nodeInit();
+ofxNUIDirectorNode::ofxNUIDirectorNode()
+{
+    ofxNUIDirectorNode::nodeInit();
+}
+
+ofxNUIDirectorNode::ofxNUIDirectorNode(vector<ofxNUINode*> _nodes)
+{
+    ofxNUIDirectorNode::nodeInit();
+    setup(_nodes);
 }
 
 //------------------------------
 
 void ofxNUIDirectorNode::nodeInit()
 {
-    ofxNUINode::nodeInit();
     positionDurationMS = 750;
     targetDurationMS = 1000;
     delayMS = 0;
     mouseIsOnASuperCanvas = false;
-    activeNode == NULL;
-    prevActiveNode == NULL;
-    closestChild == NULL;
-    prevClosestChild == NULL;
+    activeNode = NULL;
+    prevActiveNode = NULL;
+    closestChild = NULL;
+    prevClosestChild = NULL;
     
     setActiveNode(this);
     setPrevActiveNode(getActiveNode());
@@ -98,6 +104,16 @@ void ofxNUIDirectorNode::setupLight()
     ofEnableLighting();
     ambientLight.setAmbientColor(ofColor(150, 190, 170, 255));
     ambientLight.setDiffuseColor(ofColor(150,150,150));
+}
+
+//------------------------------
+
+void ofxNUIDirectorNode::refresh()
+{
+    setColorScheme(&coreColorScheme);
+    setShapeType(OFXNUINODE_SHAPE_SPHERE);
+    setCamera(&cam);
+    getActiveNode()->setActive(true);
 }
 
 //------------------------------
@@ -288,7 +304,7 @@ void ofxNUIDirectorNode::findClosestChild()
         return;
     }
     
-    if (closestChild->getNodeLabel() != prevClosestChild->getNodeLabel()) {
+    if (closestChild != prevClosestChild) {
         prevClosestChild->setHighlight(false);
         closestChild->setHighlight(true);
         prevClosestChild = closestChild;

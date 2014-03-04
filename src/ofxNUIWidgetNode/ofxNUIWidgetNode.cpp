@@ -27,9 +27,9 @@
 
 //------------------------------
 
-ofxNUIWidgetNode::ofxNUIWidgetNode(string _label, int _size) : ofxNUINode(), canvas("ofxNUIWidgetNode", OFX_UI_FONT_MEDIUM)
+ofxNUIWidgetNode::ofxNUIWidgetNode(string _label, int _size) : ofxNUINode(), canvas(_label, _size)
 {
-    nodeInit();
+    ofxNUIWidgetNode::nodeInit();
 }
 
 //------------------------------
@@ -48,8 +48,7 @@ void ofxNUIWidgetNode::nodeInit()
     getCanvas()->setGlobalSliderHeight(SLIDER_HEIGHT);
     getCanvas()->setFontSize(OFX_UI_FONT_SMALL, OFX_UI_FONT_SMALL_SIZE);
     getCanvas()->setUseHeader(false);
-    ofAddListener(getCanvas()->newGUIEvent, this,
-                  &ofxNUIWidgetNode::widgetEventListener);
+    
 }
 
 //------------------------------
@@ -57,6 +56,8 @@ void ofxNUIWidgetNode::nodeInit()
 void ofxNUIWidgetNode::setCamera(ofEasyCam *_cam)
 {
     ofxNUINode::setCamera(_cam);
+    ofAddListener(getCanvas()->newGUIEvent, this,
+                  &ofxNUIWidgetNode::widgetEventListener);
     updateSuperCanvasPosition();
 }
 
@@ -282,6 +283,7 @@ ofxUIDropDownList* ofxNUIWidgetNode::addWidgetDropDownList(string _name, vector<
     dropDownList->setAllowMultiple(false);
     dropDownList->setAutoClose(true);
     dropDownList->activateToggle(_activeItem);
+    dropDownList->setLabelText(_activeItem);
     return dropDownList;
 }
 

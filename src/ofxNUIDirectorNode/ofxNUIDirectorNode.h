@@ -40,6 +40,7 @@ public:
     /* Constructors & Destructors */
     
     ofxNUIDirectorNode();
+    ofxNUIDirectorNode(vector<ofxNUINode*> _nodes);
     
     /* Functions */
     
@@ -51,6 +52,7 @@ public:
     void setupGL();
     void setupCam();
     void setupLight();
+    void refresh();
     
     void setActiveNode(ofxNUINode *_activeNode);
     void setPrevActiveNode(ofxNUINode  *_prevActiveNode);

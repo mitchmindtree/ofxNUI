@@ -105,6 +105,7 @@ public:
     void setPositionTween(ofVec3f _position);
     void setShapeType(int _nodeShape);
     void setSiblingPerc(int _siblingNum);
+    void setUniqueID(int _uniqueID);
     
     /* Return Stuff */
     ofEasyCam* getCam();
@@ -122,6 +123,7 @@ public:
     int getShapeType();
     float getSiblingPerc();
     int getSiblingNum();
+    int getUniqueID();
     
     /* Update */
     virtual void update();
@@ -170,6 +172,7 @@ private:
     int siblingNum;
     float siblingPerc;
     int shapeType;
+    int uniqueID;
     
     ofVec3f position;
     ofVec3f positionJN;

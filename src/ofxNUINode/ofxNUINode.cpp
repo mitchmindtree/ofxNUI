@@ -28,7 +28,7 @@
 //------------------------------
 
 ofxNUINode::ofxNUINode(){
-    nodeInit();
+    ofxNUINode::nodeInit();
 }
 
 //------------------------------
@@ -56,6 +56,8 @@ void ofxNUINode::nodeInit()
     
     setShapeType(OFXNUINODE_SHAPE_SPHERE);
     
+    uniqueID = 0;
+    
     cam = NULL;
     
     active = false;
@@ -69,7 +71,7 @@ void ofxNUINode::addChild(ofxNUINode *_child)
     
     child = _child;
     if (child->getParentNode()) {
-        cloneChildren.reserve(10);
+        cloneChildren.reserve(getChildren()->capacity());
         cloneChildren.push_back(ofxNUINode(*child));
         child = &cloneChildren.at(cloneChildren.size()-1);
     }
@@ -83,7 +85,7 @@ void ofxNUINode::addChild(ofxNUINode *_child)
         child->setSiblingPerc(i);
         child->setParentNode(this);
     }
-    updateChildren();
+    //updateChildren();
     
 }
 
@@ -483,6 +485,13 @@ void ofxNUINode::setSiblingPerc(int _siblingNum)
 
 //------------------------------
 
+void ofxNUINode::setUniqueID(int _uniqueID)
+{
+    uniqueID = _uniqueID;
+}
+
+//------------------------------
+
 ofEasyCam* ofxNUINode::getCam()
 {
     return cam;
@@ -556,6 +565,11 @@ int ofxNUINode::getSiblingNum()
 float ofxNUINode::getSiblingPerc()
 {
     return siblingPerc;
+}
+
+int ofxNUINode::getUniqueID()
+{
+    return uniqueID;
 }
 
 //------------------------------
