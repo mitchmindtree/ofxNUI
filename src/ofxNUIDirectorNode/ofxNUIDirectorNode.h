@@ -31,6 +31,10 @@
 #include "ofMain.h"
 #include "ofxNUIWidgetNode.h"
 
+#define CAM_POSITION_TWEEN_DURATION 750
+#define CAM_TARGET_TWEEN_DURATION 1000
+#define CAM_TWEEN_DELAY 0
+
 /* Class */
 
 class ofxNUIDirectorNode : public ofxNUINode {
@@ -40,14 +44,12 @@ public:
     /* Constructors & Destructors */
     
     ofxNUIDirectorNode();
-    ofxNUIDirectorNode(vector<ofxNUINode*> _nodes);
     
     /* Functions */
     
     virtual string getName() { return "ofxNUIDirectorNode"; }
     virtual string getNodeType() { return "ofxNUIDirectorNode"; }
     
-    void nodeInit();
     virtual void setup(vector<ofxNUINode*> _nodes);
     void setupGL();
     void setupCam();
@@ -87,9 +89,6 @@ public:
     
     bool positionIsTweening;
     bool targetIsTweening;
-    
-    int distance;
-    int smallestDistance;
     
     unsigned int positionDurationMS;
     unsigned int targetDurationMS;

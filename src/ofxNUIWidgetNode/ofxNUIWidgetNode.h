@@ -89,38 +89,16 @@ public:
     ofxUIEnvelopeEditor* addWidgetEnvelopeEditor(string _name, ofxUIEnvelope *_envelope, bool _isFreq);
     
     ofxUISuperCanvas* getCanvas();
-    ofxUIWidget* getWidget();
-    ofxUISlider* getSlider();
-    ofxUINumberDialer* getNumberDialer();
-    ofxUILabelButton* getLabelButton();
-    ofxUILabelToggle* getLabelToggle();
-    ofxUIEnvelopeEditor* getEnvelopeEditor();
-    ofxUIDropDownList* getDropDownList();
-    ofxUITextInput* getTextInput();
-    ofxUIToggle* getToggle();
     
     /* Variable Declaration */
     
+private:
     ofxUISuperCanvas canvas;
-    int numOfWidgets;
     float circumference;
     float highlightWidth;
     float highlightHeight;
     float highlightHeightMax;
     string ddlActiveItem;
-    
-    /* Class Instances */
-    
-    ofxUISlider *slider;
-    ofxUIIntSlider *intSlider;
-    ofxUINumberDialer *numberDialer;
-    ofxUILabelButton *labelButton;
-    ofxUILabelToggle *labelToggle;
-    ofxUIWidget *widget;
-    ofxUIEnvelopeEditor *envelopeEditor;
-    ofxUIDropDownList *dropDownList;
-    ofxUITextInput *textInput;
-    ofxUIToggle *toggle;
     
 };
 

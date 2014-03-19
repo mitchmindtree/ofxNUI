@@ -70,7 +70,7 @@ public:
     virtual string getName() { return "ofxNUINode"; }
     virtual string getNodeType() { return "ofxNUINode"; }
     
-    void nodeInit();
+    virtual void refresh();
     
     /* Add Children */
     void addChild(ofxNUINode *_child);
@@ -110,6 +110,7 @@ public:
     /* Return Stuff */
     ofEasyCam* getCam();
     vector<ofxNUINode*>* getChildren();
+    ofxNUIColorScheme* getColorScheme();
     vector<ofxNUINode>* getListParents();
     int getDepth();
     int getDepthFromActive();

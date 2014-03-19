@@ -27,20 +27,9 @@
 
 //------------------------------
 
-ofxNUIWidgetNode::ofxNUIWidgetNode(string _label, int _size) : ofxNUINode(), canvas(_label, _size)
+ofxNUIWidgetNode::ofxNUIWidgetNode(string _label, int _size)
+: canvas(_label, _size)
 {
-    ofxNUIWidgetNode::nodeInit();
-}
-
-//------------------------------
-
-void ofxNUIWidgetNode::nodeInit()
-{
-    slider = NULL;
-    numberDialer = NULL;
-    labelButton = NULL;
-    widget = NULL;
-    numOfWidgets = 0;
     getCanvas()->disableAppDrawCallback();
     getCanvas()->disableAppUpdateCallback();
     getCanvas()->setTheme(0);
@@ -48,6 +37,12 @@ void ofxNUIWidgetNode::nodeInit()
     getCanvas()->setGlobalSliderHeight(SLIDER_HEIGHT);
     getCanvas()->setFontSize(OFX_UI_FONT_SMALL, OFX_UI_FONT_SMALL_SIZE);
     getCanvas()->setUseHeader(false);
+}
+
+//------------------------------
+
+void ofxNUIWidgetNode::nodeInit()
+{
     
 }
 
@@ -134,7 +129,6 @@ void ofxNUIWidgetNode::update()
 
 void ofxNUIWidgetNode::updateSuperCanvas()
 {
-    numOfWidgets = getCanvas()->getWidgets().size();
     circumference = PI * getNodeRadius() * 2;
     highlightWidth = circumference * getSiblingPerc();
     
@@ -149,8 +143,8 @@ void ofxNUIWidgetNode::updateSuperCanvasWidgetDimensions()
     /* If node is active */
     if (isActive()) {
         
-        for (int i=0; i < numOfWidgets; i++) {
-            widget = getCanvas()->getWidgets()[i];
+        for (int i=0; i < getCanvas()->getWidgets().size(); i++) {
+            ofxUIWidget *widget = getCanvas()->getWidgets()[i];
             ofxUIRectangle *rect = widget->getRect();
             
             if (widget->getKind() == OFX_UI_WIDGET_SLIDER_H) {
@@ -184,10 +178,10 @@ void ofxNUIWidgetNode::updateSuperCanvasWidgetDimensions()
     /* If node is highlighted */
     else if (isHighlighted()) {
         
-        highlightHeightMax = highlightWidth / (float)numOfWidgets;
+        highlightHeightMax = highlightWidth / (float)getCanvas()->getWidgets().size();
         
-        for (int i=0; i < numOfWidgets; i++) {
-            widget = getCanvas()->getWidgets()[i];
+        for (int i=0; i < getCanvas()->getWidgets().size(); i++) {
+            ofxUIWidget *widget = getCanvas()->getWidgets()[i];
             ofxUIRectangle *rect = widget->getRect();
             
             if (widget->getKind() == OFX_UI_WIDGET_NUMBERDIALER) { }
@@ -251,8 +245,8 @@ ofxUISlider* ofxNUIWidgetNode::addWidgetSlider(string _name, float *_value,
 
 ofxUIIntSlider* ofxNUIWidgetNode::addWidgetIntSlider(string _name, int *_value, int _min, int _max)
 {
-    getCanvas()->addWidgetDown(intSlider = new ofxUIIntSlider
-                        (_name, _min, _max, _value, SLIDER_WIDTH, SLIDER_HEIGHT));
+    ofxUIIntSlider *intSlider;
+    getCanvas()->addWidgetDown(intSlider = new ofxUIIntSlider(_name, _min, _max, _value, SLIDER_WIDTH, SLIDER_HEIGHT));
     return intSlider;
 }
 
@@ -269,7 +263,7 @@ ofxUINumberDialer* ofxNUIWidgetNode::addWidgetNumberDialer(string _name, float *
 ofxUILabelButton* ofxNUIWidgetNode::addWidgetLabelButton(string _name)
 {
     bool tempBool = false;
-    labelButton = getCanvas()->addLabelButton(_name, tempBool, BUTTON_WIDTH, BUTTON_HEIGHT, OFX_UI_FONT_SMALL, false);
+    ofxUILabelButton *labelButton = getCanvas()->addLabelButton(_name, tempBool, BUTTON_WIDTH, BUTTON_HEIGHT, OFX_UI_FONT_SMALL, false);
     labelButton->setLabelVisible(true);
     return labelButton;
 }
@@ -279,6 +273,7 @@ ofxUILabelButton* ofxNUIWidgetNode::addWidgetLabelButton(string _name)
 ofxUIDropDownList* ofxNUIWidgetNode::addWidgetDropDownList(string _name, vector<string> _items,
                                              string _activeItem)
 {
+    ofxUIDropDownList *dropDownList;
     getCanvas()->addWidgetDown(dropDownList = new ofxUIDropDownList(DDL_WIDTH,_name,_items, OFX_UI_FONT_SMALL));
     dropDownList->setAllowMultiple(false);
     dropDownList->setAutoClose(true);
@@ -291,6 +286,7 @@ ofxUIDropDownList* ofxNUIWidgetNode::addWidgetDropDownList(string _name, vector<
 
 ofxUITextInput* ofxNUIWidgetNode::addWidgetTextInput(string _name, string _textstring)
 {
+    ofxUITextInput *textInput;
     getCanvas()->addWidgetDown(textInput = new ofxUITextInput(_name, _textstring, TEXT_INPUT_WIDTH));
     textInput->setTriggerOnClick(false);
     textInput->setAutoClear(false);
@@ -301,16 +297,15 @@ ofxUITextInput* ofxNUIWidgetNode::addWidgetTextInput(string _name, string _texts
 
 ofxUIToggle* ofxNUIWidgetNode::addWidgetToggle(string _name, bool *_toggle)
 {
-    return getCanvas()->addToggle(_name, _toggle, TOGGLE_DIMENSION,
-                                       TOGGLE_DIMENSION);
+    return getCanvas()->addToggle(_name, _toggle, TOGGLE_DIMENSION, TOGGLE_DIMENSION);
 }
 
 //------------------------------
 
-ofxUIEnvelopeEditor* ofxNUIWidgetNode::addWidgetEnvelopeEditor(string _name,ofxUIEnvelope*_envelope, bool _isFreq)
+ofxUIEnvelopeEditor* ofxNUIWidgetNode::addWidgetEnvelopeEditor(string _name, ofxUIEnvelope*_envelope, bool _isFreq)
 {
-    getCanvas()->addWidgetDown(envelopeEditor = new ofxUIEnvelopeEditor
-    (_name, _envelope,ENVELOPE_EDITOR_WIDTH, ENVELOPE_EDITOR_HEIGHT, 0.0f, 0.0f));
+    ofxUIEnvelopeEditor *envelopeEditor;
+    getCanvas()->addWidgetDown(envelopeEditor = new ofxUIEnvelopeEditor(_name, _envelope,ENVELOPE_EDITOR_WIDTH, ENVELOPE_EDITOR_HEIGHT, 0.0f, 0.0f));
     envelopeEditor->isFrequency = _isFreq;
     return envelopeEditor;
 }
@@ -321,33 +316,33 @@ void ofxNUIWidgetNode::widgetEventListener(ofxUIEventArgs &e)
 {
     
     for (int i=0; i < getCanvas()->getWidgets().size(); i++) {
-        widget = getCanvas()->getWidgets().at(i);
+        ofxUIWidget *widget = getCanvas()->getWidgets().at(i);
         
         if(e.widget->getName() == widget->getName()){
             
             /* Slider */
             if (widget->getKind() == OFX_UI_WIDGET_SLIDER_H
                 || widget->getKind() == OFX_UI_WIDGET_SLIDER_V) {
-                slider = dynamic_cast<ofxUISlider*>(widget);
+                ofxUISlider *slider = dynamic_cast<ofxUISlider*>(widget);
                 widgetFunctions(slider->getName());
             }
             
             /* Int Slider */
             else if (widget->getKind() == OFX_UI_WIDGET_INTSLIDER_H
                      || widget->getKind() == OFX_UI_WIDGET_INTSLIDER_V) {
-                intSlider = dynamic_cast<ofxUIIntSlider*>(widget);
+                ofxUIIntSlider *intSlider = dynamic_cast<ofxUIIntSlider*>(widget);
                 widgetFunctions(intSlider->getName());
             }
             
             /* Number Dialer */
             else if (widget->getKind() == OFX_UI_WIDGET_NUMBERDIALER) {
-                numberDialer = dynamic_cast<ofxUINumberDialer*>(widget);
+                ofxUINumberDialer *numberDialer = dynamic_cast<ofxUINumberDialer*>(widget);
                 widgetFunctions(numberDialer->getName());
             }
             
             /* Drop Down List */
             else if (widget->getKind() == OFX_UI_WIDGET_DROPDOWNLIST) {
-                dropDownList = dynamic_cast<ofxUIDropDownList*>(widget);
+                ofxUIDropDownList *dropDownList = dynamic_cast<ofxUIDropDownList*>(widget);
                 if (ofGetMousePressed() == false
                     && dropDownList->getSelected().size()) {
                     ofxUIWidget *selected = dropDownList->getSelected().at(0);
@@ -357,7 +352,7 @@ void ofxNUIWidgetNode::widgetEventListener(ofxUIEventArgs &e)
             
             /* Label Button */
             else if (widget->getKind() == OFX_UI_WIDGET_LABELBUTTON) {
-                labelButton = dynamic_cast<ofxUILabelButton*>(widget);
+                ofxUILabelButton *labelButton = dynamic_cast<ofxUILabelButton*>(widget);
                 if(ofGetMousePressed() == false){
                     widgetFunctions(labelButton->getName());
                     labelButton->setValue(false);
@@ -366,7 +361,7 @@ void ofxNUIWidgetNode::widgetEventListener(ofxUIEventArgs &e)
             
             /* Text Input */
             else if (widget->getKind() == OFX_UI_WIDGET_TEXTINPUT) {
-                textInput = dynamic_cast<ofxUITextInput*>(widget);
+                ofxUITextInput *textInput = dynamic_cast<ofxUITextInput*>(widget);
                 widgetFunctions(textInput->getName());
             }
             
@@ -383,51 +378,6 @@ void ofxNUIWidgetNode::widgetEventListener(ofxUIEventArgs &e)
 ofxUISuperCanvas* ofxNUIWidgetNode::getCanvas()
 {
     return &canvas;
-}
-
-ofxUIWidget* ofxNUIWidgetNode::getWidget()
-{
-    return widget;
-}
-
-ofxUISlider* ofxNUIWidgetNode::getSlider()
-{
-    return slider;
-}
-
-ofxUINumberDialer* ofxNUIWidgetNode::getNumberDialer()
-{
-    return numberDialer;
-}
-
-ofxUILabelButton* ofxNUIWidgetNode::getLabelButton()
-{
-    return labelButton;
-}
-
-ofxUILabelToggle* ofxNUIWidgetNode::getLabelToggle()
-{
-    return labelToggle;
-}
-
-ofxUIEnvelopeEditor* ofxNUIWidgetNode::getEnvelopeEditor()
-{
-    return envelopeEditor;
-}
-
-ofxUIDropDownList* ofxNUIWidgetNode::getDropDownList()
-{
-    return dropDownList;
-}
-
-ofxUITextInput* ofxNUIWidgetNode::getTextInput()
-{
-    return textInput;
-}
-
-ofxUIToggle* ofxNUIWidgetNode::getToggle()
-{
-    return toggle;
 }
 
 //------------------------------

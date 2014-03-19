@@ -28,34 +28,21 @@
 //------------------------------
 
 ofxNUIDirectorNode::ofxNUIDirectorNode()
+: positionDurationMS(CAM_POSITION_TWEEN_DURATION)
+, targetDurationMS(CAM_TARGET_TWEEN_DURATION)
+, delayMS(CAM_TWEEN_DELAY)
+, mouseIsOnASuperCanvas(false)
+, activeNode(NULL)
+, prevActiveNode(NULL)
+, closestChild(NULL)
+, prevClosestChild(NULL)
 {
-    ofxNUIDirectorNode::nodeInit();
-}
-
-ofxNUIDirectorNode::ofxNUIDirectorNode(vector<ofxNUINode*> _nodes)
-{
-    ofxNUIDirectorNode::nodeInit();
-    setup(_nodes);
-}
-
-//------------------------------
-
-void ofxNUIDirectorNode::nodeInit()
-{
-    positionDurationMS = 750;
-    targetDurationMS = 1000;
-    delayMS = 0;
-    mouseIsOnASuperCanvas = false;
-    activeNode = NULL;
-    prevActiveNode = NULL;
-    closestChild = NULL;
-    prevClosestChild = NULL;
-    
     setActiveNode(this);
     setPrevActiveNode(getActiveNode());
     setActive(true);
     setHighlight(false);
     setNodePosition(ofVec3f(0.0f, 0.0f, 0.0f));
+    
 }
 
 //------------------------------
@@ -68,7 +55,6 @@ void ofxNUIDirectorNode::setup(vector<ofxNUINode *> _nodes)
     }
     setNodeLabel(getName());
     setColorScheme(&coreColorScheme);
-    setShapeType(OFXNUINODE_SHAPE_SPHERE);
     setupGL();
     setupLight();
     setupCam();
@@ -110,6 +96,8 @@ void ofxNUIDirectorNode::setupLight()
 
 void ofxNUIDirectorNode::refresh()
 {
+    closestChild = NULL;
+    prevClosestChild = NULL;
     setColorScheme(&coreColorScheme);
     setShapeType(OFXNUINODE_SHAPE_SPHERE);
     setCamera(&cam);
@@ -285,8 +273,8 @@ void ofxNUIDirectorNode::findClosestChild()
 {
     ofVec2f mouse = ofVec2f(ofGetMouseX(), ofGetMouseY());
     
-    distance = 0;
-    smallestDistance = 0;
+    int distance(0);
+    int smallestDistance(0);
     
     for (int i=0; i < activeNode->getChildren()->size(); i++) {
         child = dynamic_cast<ofxNUINode*>(activeNode->getChildren()->at(i));
@@ -315,6 +303,7 @@ void ofxNUIDirectorNode::findClosestChild()
 
 void ofxNUIDirectorNode::selectNode()
 {
+    if (!closestChild) return;
     
     ofVec2f mouse = ofVec2f(ofGetMouseX(), ofGetMouseY());
     ofVec3f current = cam.worldToScreen(activeNode->ofNode::getPosition());

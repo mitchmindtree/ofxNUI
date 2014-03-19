@@ -27,41 +27,37 @@
 
 //------------------------------
 
-ofxNUINode::ofxNUINode(){
-    ofxNUINode::nodeInit();
+ofxNUINode::ofxNUINode()
+: nodeLabel("")
+, siblingPerc(0.f)
+, parentNode(NULL)
+, colorScheme(NULL)
+, depth(0)
+, depthFromActive(0)
+, depthFromHighlighted(-1)
+, nodeLayout(OFXNUINODE_LAYOUT_RADIAL)
+, positionDepth(OFXNUINODE_LAYOUT_DEPTH)
+, positionRadius(OFXNUINODE_LAYOUT_RADIUS)
+, nodeRadius(OFXNUINODE_NODE_RADIUS)
+, posTweenDurMs(OFXNUINODE_DEFAULT_POS_TWEEN_DURATION)
+, posTweenDelMs(OFXNUINODE_DEFAULT_POS_TWEEN_DELAY)
+, shapeType(OFXNUINODE_SHAPE_SPHERE)
+, uniqueID(0)
+, cam(NULL)
+, active(false)
+, highlight(false)
+{
+    // Intentionally Empty
 }
 
 //------------------------------
 
-void ofxNUINode::nodeInit()
+void ofxNUINode::refresh()
 {
-    nodeLabel = "";
-    siblingPerc = 0.0f;
-    parentNode = NULL;
-    colorScheme = NULL;
-    
-    depth = 0;
-    depthFromActive = 0;
-    depthFromHighlighted = -1;
-    //shape = NULL;
-    
-    nodeLayout = OFXNUINODE_LAYOUT_RADIAL;
-    positionDepth = OFXNUINODE_LAYOUT_DEPTH;
-    positionRadius = OFXNUINODE_LAYOUT_RADIUS;
-    
-    nodeRadius = OFXNUINODE_NODE_RADIUS;
-    
-    posTweenDurMs = OFXNUINODE_DEFAULT_POS_TWEEN_DURATION;
-    posTweenDelMs = OFXNUINODE_DEFAULT_POS_TWEEN_DELAY;
-    
-    setShapeType(OFXNUINODE_SHAPE_SPHERE);
-    
-    uniqueID = 0;
-    
-    cam = NULL;
-    
-    active = false;
-    highlight = false;
+    updateChildren();
+    setColorScheme(getColorScheme());
+    setShapeType(getShapeType());
+    setCamera(getCam());
 }
 
 //------------------------------
@@ -500,6 +496,11 @@ ofEasyCam* ofxNUINode::getCam()
 vector<ofxNUINode*>* ofxNUINode::getChildren()
 {
     return &children;
+}
+
+ofxNUIColorScheme* ofxNUINode::getColorScheme()
+{
+    return colorScheme;
 }
 
 vector<ofxNUINode>* ofxNUINode::getListParents()
