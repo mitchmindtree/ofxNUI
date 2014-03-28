@@ -62,7 +62,6 @@ public:
     virtual string getName() { return "ofxNUIWidgetNode"; }
     virtual string getNodeType() { return "ofxNUIWidgetNode"; }
     
-    virtual void nodeInit();
     void setCamera(ofEasyCam *_cam);
     void addListeners();
     void updateNode();

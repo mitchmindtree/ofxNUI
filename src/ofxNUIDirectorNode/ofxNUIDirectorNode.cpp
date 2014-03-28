@@ -42,7 +42,6 @@ ofxNUIDirectorNode::ofxNUIDirectorNode()
     setActive(true);
     setHighlight(false);
     setNodePosition(ofVec3f(0.0f, 0.0f, 0.0f));
-    
 }
 
 //------------------------------
@@ -78,9 +77,9 @@ void ofxNUIDirectorNode::setupCam()
 {
     cam.setPosition(getPosition().x,
                     getPosition().y,
-                    getPosition().z + (OFXNUINODE_LAYOUT_RADIUS * 1.8f));
+                    getPosition().z + (OFXNUINODE::LAYOUT_RADIUS * 1.8f));
     cam.setTarget(getPosition());
-    cam.setDistance(OFXNUINODE_LAYOUT_RADIUS * 1.8f);
+    cam.setDistance(OFXNUINODE::LAYOUT_RADIUS * 1.8f);
 }
 
 //------------------------------
@@ -99,7 +98,7 @@ void ofxNUIDirectorNode::refresh()
     closestChild = NULL;
     prevClosestChild = NULL;
     setColorScheme(&coreColorScheme);
-    setShapeType(OFXNUINODE_SHAPE_SPHERE);
+    setShapeType(OFXNUINODE::SHAPE_SPHERE);
     setCamera(&cam);
     getActiveNode()->setActive(true);
 }
@@ -168,10 +167,10 @@ void ofxNUIDirectorNode::moveCamToActive()
     int posX, posY, posZ;
     int tarX, tarY, tarZ;
     
-    if (activeNode->getNodeLayout() == OFXNUINODE_LAYOUT_LIST) {
-        posX = activeNode->getNodePosition().x + OFXNUINODE_LAYOUT_RADIUS;
-        posY = activeNode->getNodePosition().y - OFXNUINODE_LAYOUT_RADIUS * 0.5f;
-        posZ = activeNode->getNodePosition().z + (OFXNUINODE_LAYOUT_RADIUS * 1.8f);
+    if (activeNode->getNodeLayout() == OFXNUINODE::LAYOUT_LIST) {
+        posX = activeNode->getNodePosition().x + OFXNUINODE::LAYOUT_RADIUS;
+        posY = activeNode->getNodePosition().y - OFXNUINODE::LAYOUT_RADIUS * 0.5f;
+        posZ = activeNode->getNodePosition().z + (OFXNUINODE::LAYOUT_RADIUS * 1.8f);
         tarX = posX;
         tarY = posY;
         tarZ = activeNode->getNodePosition().z;
@@ -183,7 +182,7 @@ void ofxNUIDirectorNode::moveCamToActive()
                 + widgetNode->getCanvas()->getRect()->getHalfWidth() * 0.65f;
         posY = activeNode->getNodePosition().y
                 - widgetNode->getCanvas()->getRect()->getHalfHeight() * 0.65f;
-        posZ = activeNode->getNodePosition().z + (OFXNUINODE_LAYOUT_RADIUS * 1.8f);
+        posZ = activeNode->getNodePosition().z + (OFXNUINODE::LAYOUT_RADIUS * 1.8f);
         tarX = posX;
         tarY = posY;
         tarZ = activeNode->getNodePosition().z;
@@ -192,7 +191,7 @@ void ofxNUIDirectorNode::moveCamToActive()
     else if (getChildren()) {
         posX = activeNode->getNodePosition().x;
         posY = activeNode->getNodePosition().y;
-        posZ = activeNode->getNodePosition().z + (OFXNUINODE_LAYOUT_RADIUS * 1.8f);
+        posZ = activeNode->getNodePosition().z + (OFXNUINODE::LAYOUT_RADIUS * 1.8f);
         tarX = activeNode->getNodePosition().x;
         tarY = activeNode->getNodePosition().y;
         tarZ = activeNode->getNodePosition().z;

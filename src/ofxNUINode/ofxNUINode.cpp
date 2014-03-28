@@ -35,19 +35,19 @@ ofxNUINode::ofxNUINode()
 , depth(0)
 , depthFromActive(0)
 , depthFromHighlighted(-1)
-, nodeLayout(OFXNUINODE_LAYOUT_RADIAL)
-, positionDepth(OFXNUINODE_LAYOUT_DEPTH)
-, positionRadius(OFXNUINODE_LAYOUT_RADIUS)
-, nodeRadius(OFXNUINODE_NODE_RADIUS)
-, posTweenDurMs(OFXNUINODE_DEFAULT_POS_TWEEN_DURATION)
-, posTweenDelMs(OFXNUINODE_DEFAULT_POS_TWEEN_DELAY)
-, shapeType(OFXNUINODE_SHAPE_SPHERE)
+, nodeLayout(OFXNUINODE::LAYOUT_RADIAL)
+, positionDepth(OFXNUINODE::LAYOUT_DEPTH)
+, positionRadius(OFXNUINODE::LAYOUT_RADIUS)
+, nodeRadius(OFXNUINODE::NODE_RADIUS)
+, posTweenDurMs(OFXNUINODE::DEFAULT_POS_TWEEN_DURATION)
+, posTweenDelMs(OFXNUINODE::DEFAULT_POS_TWEEN_DELAY)
+, shapeType(OFXNUINODE::SHAPE_SPHERE)
 , uniqueID(0)
 , cam(NULL)
 , active(false)
 , highlight(false)
 {
-    // Intentionally Empty
+    
 }
 
 //------------------------------
@@ -62,27 +62,21 @@ void ofxNUINode::refresh()
 
 //------------------------------
 
-void ofxNUINode::addChild(ofxNUINode *_child)
+void ofxNUINode::addChild(ofxNUINode *child)
 {
-    
-    child = _child;
     if (child->getParentNode()) {
         cloneChildren.reserve(getChildren()->capacity());
         cloneChildren.push_back(ofxNUINode(*child));
-        child = &cloneChildren.at(cloneChildren.size()-1);
+        child = &cloneChildren.back();
     }
     children.push_back(child);
     for (int i=0; i < children.size(); i++) {
         child = children.at(i);
-        if (child->nodeLabel == "") {
-            child->setNodeLabel(child->getName());
-        }
+        if (child->nodeLabel == "") child->setNodeLabel(child->getName());
         child->setNumOfSiblings(children.size());
         child->setSiblingPerc(i);
         child->setParentNode(this);
     }
-    //updateChildren();
-    
 }
 
 //------------------------------
@@ -107,28 +101,24 @@ void ofxNUINode::addChildList(vector<ofxNUINode *> childList, string _name, int 
 {
     listParents.reserve(20);
     listParents.push_back(ofxNUINode());
-    child = &listParents.at(listParents.size()-1);
+    ofxNUINode *child = &listParents.back();
     child->setNodeLabel(_name);
     child->setNodeLayout(_layout);
     addChild(child);
     child->getChildren()->reserve(childList.size());
-    for (int i=0; i < childList.size(); i++) {
-        child->addChild(childList.at(i), i+1);
-    }
+    for (int i=0; i < childList.size(); i++)
+        child->addChild(childList[i], i+1);
 }
 
 //------------------------------
 
 void ofxNUINode::updateChildren()
 {
-    
-    for (int i=0; i < children.size(); i++) {
-        child = children.at(i);
+    for (auto &child : children) {
         child->setNumOfSiblings(children.size());
         child->updateNode();
         child->updateChildren();
     }
-    
 }
 
 //------------------------------
@@ -144,7 +134,6 @@ void ofxNUINode::updateNode()
 
 void ofxNUINode::updateNodeDepth()
 {
-    
     if (isActive()) {
         depthFromActive = 0;
         if (getParentNode()) {
@@ -152,59 +141,48 @@ void ofxNUINode::updateNodeDepth()
             depth = getParentNode()->depth + 1;
         }
     }
-    
     else if (!isActive() && getParentNode()) {
-        if (getParentNode()->depthFromActive >= 0) {
-            depthFromActive = getParentNode()->depthFromActive + 1;
-        }
-        else if (getParentNode()->depthFromActive < 0) {
-            depthFromActive = getParentNode()->depthFromActive -1;
-        }
+        depthFromActive = getParentNode()->depthFromActive >= 0 ? getParentNode()->depthFromActive+1 : getParentNode()->depthFromActive-1;
         depth = getParentNode()->depth + 1;
     }
-    
     else if (!isActive() && !getParentNode()) {
         depth = 0;
-        if (getChildren()->size()) {
-            depthFromActive = getChildren()->at(0)->depthFromActive -1;
-        }
+        if (getChildren()->size()) depthFromActive = getChildren()->front()->depthFromActive -1;
     }
-    
 }
 
 //------------------------------
 
 void ofxNUINode::updateNodePosition()
 {
-    
-    if (!getParentNode()) { return; }
+    if (!getParentNode()) return;
     
     if (getParentNode()->isActive()) {
         positionDepth = 0;
-        positionRadius = OFXNUINODE_LAYOUT_RADIUS * 3.0f / 4.0f;
+        positionRadius = OFXNUINODE::LAYOUT_RADIUS * 3.0f / 4.0f;
     }
     else if (isActive()) {
-        positionDepth = OFXNUINODE_LAYOUT_DEPTH * 4.0f;
-        positionRadius = OFXNUINODE_LAYOUT_RADIUS;
+        positionDepth = OFXNUINODE::LAYOUT_DEPTH * 4.0f;
+        positionRadius = OFXNUINODE::LAYOUT_RADIUS;
     }
     else {
-        positionDepth = OFXNUINODE_LAYOUT_DEPTH;
-        positionRadius = OFXNUINODE_LAYOUT_RADIUS;
+        positionDepth = OFXNUINODE::LAYOUT_DEPTH;
+        positionRadius = OFXNUINODE::LAYOUT_RADIUS;
     }
     
     if (getParentNode()->getParentNode()) {
         if (getParentNode()->getParentNode()->isActive()) {
-            positionDepth = OFXNUINODE_LAYOUT_DEPTH * 2.0f;
-            positionRadius = OFXNUINODE_LAYOUT_RADIUS;
+            positionDepth = OFXNUINODE::LAYOUT_DEPTH * 2.0f;
+            positionRadius = OFXNUINODE::LAYOUT_RADIUS;
         }
     }
     
     /* Get Position */
     switch (getParentNode()->getNodeLayout()) {
-        case OFXNUINODE_LAYOUT_RADIAL: updateNodePositionRadial(); break;
-        case OFXNUINODE_LAYOUT_SPIRAL: updateNodePositionSpiral(); break;
-        case OFXNUINODE_LAYOUT_LIST: updateNodePositionList(); break;
-        case OFXNUINODE_LAYOUT_GRID: updateNodePositionGrid(); break;
+        case OFXNUINODE::LAYOUT_RADIAL: updateNodePositionRadial(); break;
+        case OFXNUINODE::LAYOUT_SPIRAL: updateNodePositionSpiral(); break;
+        case OFXNUINODE::LAYOUT_LIST: updateNodePositionList(); break;
+        case OFXNUINODE::LAYOUT_GRID: updateNodePositionGrid(); break;
         default: updateNodePositionRadial(); break;
     }
     
@@ -212,7 +190,6 @@ void ofxNUINode::updateNodePosition()
     position += getParentNode()->getNodePosition();
     setOrientation(position);
     setNodePosition(position);
-    
 }
 
 //------------------------------
@@ -220,28 +197,18 @@ void ofxNUINode::updateNodePosition()
 void ofxNUINode::updateNodePositionRadial()
 {
     float x = getSiblingPerc() + getParentNode()->getSiblingPerc() + 0.25f;
-    position = ofVec3f(sin(TWO_PI * x) * positionRadius,
-                       cos(TWO_PI * x) * positionRadius,
-                       positionDepth);
+    position = ofVec3f(sin(TWO_PI * x) * positionRadius, cos(TWO_PI * x) * positionRadius, positionDepth);
 }
 
 //------------------------------
 
 void ofxNUINode::updateNodePositionSpiral()
 {
-    if (getNumOfSiblings() >= OFXNUINODE_SPIRAL_DEPTH_THRESHHOLD) {
-        float x = (getSiblingPerc()/(1.0f/(float)getNumOfSiblings()))
-                    * OFXNUINODE_SPIRAL_DEPTH_THRESHHOLD_PERC
-                    + getParentNode()->getSiblingPerc() + 0.75f;
-        position = ofVec3f(sin(TWO_PI * x) * positionRadius,
-                           cos(TWO_PI * x) * positionRadius,
-                           positionDepth
-                           - (getSiblingPerc() / (1.0f/(float)getNumOfSiblings()))
-                           * 50.0f);
+    if (getNumOfSiblings() >= OFXNUINODE::SPIRAL_DEPTH_THRESHHOLD) {
+        float x = (getSiblingPerc()/(1.0f/(float)getNumOfSiblings())) * OFXNUINODE::SPIRAL_DEPTH_THRESHHOLD_PERC + getParentNode()->getSiblingPerc() + 0.75f;
+        position = ofVec3f(sin(TWO_PI * x) * positionRadius, cos(TWO_PI * x) * positionRadius, positionDepth - (getSiblingPerc() / (1.0f/(float)getNumOfSiblings())) * 50.0f);
     }
-    else {
-        updateNodePositionRadial();
-    }
+    else updateNodePositionRadial();
 }
 
 //------------------------------
@@ -255,14 +222,14 @@ void ofxNUINode::updateNodePositionList()
 
 void ofxNUINode::updateNodePositionGrid()
 {
-    
+    // Not yet implemented.
 }
 
 //------------------------------
 
 void ofxNUINode::updateNodeColors()
 {
-    if (!colorScheme) { return; }
+    if (!colorScheme) return;
     updateShapeColor();
     updateLineColor();
     updateNameColor();
@@ -272,117 +239,81 @@ void ofxNUINode::updateNodeColors()
 
 void ofxNUINode::updateShapeColor()
 {
-    
-    //if (!shape) { return; }
-    if (colorScheme) {
-        colorScheme->getLineColor();
-    }
+    //if (!shape) return;
+    if (colorScheme) colorScheme->getLineColor();
     /* Set shape size and position */
-    //shape->setRadius(getNodeRadius());
-    sphere.setRadius(getNodeRadius());
+    sphere.setRadius(getNodeRadius()); //shape->setRadius(getNodeRadius());
     
-    if (!getParentNode()) {
-        if (isActive()) {
-            shapeColor = colorScheme->getShapeColorActive();
-        }
-        else {
-            shapeColor =colorScheme->getShapeColorActiveDepth(getDepthFromActive());
-        }
-    }
+    if (!getParentNode())
+        shapeColor = isActive() ? colorScheme->getShapeColorActive() : colorScheme->getShapeColorActiveDepth(getDepthFromActive());
     
     /* If node is currently active */
-    else if (isActive()) {
+    else if (isActive())
         shapeColor = colorScheme->getShapeColorActive();
-    }
     
     /* If node is currently highlighted */
-    else if (isHighlighted()) {
+    else if (isHighlighted())
         shapeColor = colorScheme->getShapeColorHighlighted();
-    }
     
     /* If parent of node is currently active */
-    else if (getParentNode()->isActive()) {
+    else if (getParentNode()->isActive())
         shapeColor = colorScheme->getShapeColorActiveParent();
-    }
     
     /* If is derived from highlighted node */
-    else if (depthFromHighlighted > 0) {
-        shapeColor =
-            colorScheme->getShapeColorHighlightDepth(getDepthFromHighlighted());
-    }
+    else if (depthFromHighlighted > 0)
+        shapeColor = colorScheme->getShapeColorHighlightDepth(getDepthFromHighlighted());
     
     /* If is any other type of node derived from active */
-    else if (depthFromActive > 0) {
+    else if (depthFromActive > 0)
         shapeColor = colorScheme->getShapeColorActiveDepth(getDepthFromActive());
-    }
     
     /* If is any other type of node not derived from active */
-    else if (depthFromActive < 0) {
+    else if (depthFromActive < 0)
         shapeColor = colorScheme->getShapeColorActiveDepth(getDepthFromActive());
-    }
     
     //shapeColor = ofColor(red, grn, blu, alpha);
     //shape->setColor(shapeColor);
     sphere.setColor(shapeColor);
-    
 }
 
 //------------------------------
 
 void ofxNUINode::updateLineColor()
 {
-    
-    if (!getParentNode()) { return; }
+    if (!getParentNode()) return;
     
     /* If node is currently active */
-    if (isActive()) {
+    if (isActive())
         lineColor = colorScheme->getLineColorActive();
-    }
     
     /* If node is currently highlighted */
-    else if (isHighlighted()) {
+    else if (isHighlighted())
         lineColor = colorScheme->getLineColorHighlighted();
-    }
     
     /* If parent node is active */
-    else if (getParentNode()->isActive()) {
+    else if (getParentNode()->isActive())
         lineColor = colorScheme->getLineColorActiveParent();
-    }
     
     /* If is derived from highlighted node */
-    else if (getDepthFromHighlighted() > 0) {
-        lineColor =
-        colorScheme->getLineColorHighlightDepth(getDepthFromHighlighted());
-    }
+    else if (getDepthFromHighlighted() > 0)
+        lineColor = colorScheme->getLineColorHighlightDepth(getDepthFromHighlighted());
     
     /* If is any other type of node derived from active */
-    else if (depthFromActive > 0) {
+    else if (depthFromActive > 0)
         lineColor = colorScheme->getLineColorActiveDepth(getDepthFromActive());
-    }
     
     /* If is any other type of node not derived from active */
-    else if (depthFromActive < 0) {
+    else if (depthFromActive < 0)
         lineColor = colorScheme->getLineColorActiveDepth(getDepthFromActive());
-    }
     
-    else {
-        lineColor = colorScheme->getLineColor();
-    }
-    
+    else lineColor = colorScheme->getLineColor();
 }
 
 //------------------------------
 
 void ofxNUINode::updateNameColor()
 {
-    
-    if (isHighlighted() || isActive()) {
-        nameColor = colorScheme->getNameColorActive();
-    }
-    else {
-        nameColor = colorScheme->getNameColor();
-    }
-    
+    nameColor = (isHighlighted() || isActive()) ? colorScheme->getNameColorActive() : colorScheme->getNameColor();
 }
 
 //------------------------------
@@ -390,9 +321,7 @@ void ofxNUINode::updateNameColor()
 void ofxNUINode::setCamera(ofEasyCam *_cam)
 {
     cam = _cam;
-    for (int i=0; i < getChildren()->size(); i++) {
-        getChildren()->at(i)->setCamera(cam);
-    }
+    for (auto &child : children) child->setCamera(cam);
 }
 
 //------------------------------
@@ -400,9 +329,7 @@ void ofxNUINode::setCamera(ofEasyCam *_cam)
 void ofxNUINode::setColorScheme(ofxNUIColorScheme *_colorScheme)
 {
     colorScheme = _colorScheme;
-    for (int i=0; i < getChildren()->size(); i++) {
-        getChildren()->at(i)->setColorScheme(colorScheme);
-    }
+    for (auto &child : children) child->setColorScheme(colorScheme);
 }
 
 //------------------------------
@@ -453,9 +380,7 @@ void ofxNUINode::setParentNode(ofxNUINode *_parent)
 
 void ofxNUINode::setPositionTween(ofVec3f _position)
 {
-    tweenNodePos.setParameters(1, easingExpo, ofxTween::easeOut,
-                               getPosition().x, _position.x,
-                               posTweenDurMs, posTweenDelMs);
+    tweenNodePos.setParameters(1, easingExpo, ofxTween::easeOut, getPosition().x, _position.x, posTweenDurMs, posTweenDelMs);
     tweenNodePos.addValue(getPosition().y, _position.y);
     tweenNodePos.addValue(getPosition().z, _position.z);
     tweenNodePos.start();
@@ -466,8 +391,8 @@ void ofxNUINode::setPositionTween(ofVec3f _position)
 void ofxNUINode::setShapeType(int _shapeType)
 {
     shapeType = _shapeType;
-    if (shapeType == OFXNUINODE_SHAPE_SPHERE) {
-        
+    if (shapeType == OFXNUINODE::SHAPE_SPHERE) {
+        // Not yet implemented.
     }
 }
 
@@ -577,40 +502,21 @@ int ofxNUINode::getUniqueID()
 
 void ofxNUINode::update()
 {
-    
-    if (depthFromActive > 4) { return; }
-    
-    for (int i=0; i < children.size(); i++) {
-        child = children[i];
-        child->update();
-    }
-    
-    if (depthFromActive < 0) { return; }
-    else if (depthFromActive > 3) {
-        if (depthFromHighlighted > 3 || depthFromHighlighted < 0) { return; }
-    }
-    
-    if (isActive() || isHighlighted()) {
-        //shape->update();
-        sphere.update();
-    }
-    
-    if (tweenNodePos.isRunning() && getParentNode()) {
-        updateTween();
-    }
-    
+    if (depthFromActive > 4) return;
+    for (auto &child : children) child->update();
+    if (depthFromActive < 0) return;
+    else if (depthFromActive > 3)
+        if (depthFromHighlighted > 3 || depthFromHighlighted < 0) return;
+    if (isActive() || isHighlighted()) sphere.update(); //shape->update();
+    if (tweenNodePos.isRunning() && getParentNode()) updateTween();
 }
 
 //------------------------------
 
 void ofxNUINode::updateTween()
 {
-    ofVec3f tempTweenNodePos = ofVec3f(tweenNodePos.update(),
-                                       tweenNodePos.getTarget(1),
-                                       tweenNodePos.getTarget(2));
-    
-    /* Update Node Position */
-    setPosition(tempTweenNodePos);
+    ofVec3f tempTweenNodePos(tweenNodePos.update(), tweenNodePos.getTarget(1), tweenNodePos.getTarget(2));
+    setPosition(tempTweenNodePos); // Update Node Position
     //shape->setPosition(tempTweenNodePos);
     sphere.setPosition(tempTweenNodePos);
     /* Setup line */
@@ -623,47 +529,32 @@ void ofxNUINode::updateTween()
 
 void ofxNUINode::customDraw()
 {
-    
-    if (depthFromActive > 4) { return; }
-    
-    /* If there are children... */
-    for (int i=0; i < children.size(); i++) {
-        child = children.at(i);
-        child->customDraw();
-    }
-    
-    if (depthFromActive < 0) { return; }
-    else if (depthFromActive > 3) {
-        if (depthFromHighlighted > 3 || depthFromHighlighted < 0) { return; }
-    }
-    
+    if (depthFromActive > 4) return;
+    for (auto &child : children) child->customDraw();
+    if (depthFromActive < 0) return;
+    else if (depthFromActive > 3)
+        if (depthFromHighlighted > 3 || depthFromHighlighted < 0) return;
     ofEnableAlphaBlending();
     drawShape();
     drawLine();
     drawName();
     ofDisableAlphaBlending();
-    
-    
-    
 }
 
 //------------------------------
 
 void ofxNUINode::customDraw2D()
 {
-    for (int i=0; i < getChildren()->size(); i++) {
-        getChildren()->at(i)->customDraw2D();
-    }
+    for (auto &child : children) child->customDraw2D();
 }
 
 //------------------------------
 
 void ofxNUINode::drawLine()
 {
-    if (getParentNode()) {
-        ofSetColor(lineColor);
-        line.draw();
-    }
+    if (!getParentNode()) return;
+    ofSetColor(lineColor);
+    line.draw();
 }
 
 //------------------------------
@@ -672,16 +563,13 @@ void ofxNUINode::drawName()
 {
     
     /* Only draw if depthFromActive < 1 or parent is highlighted */
-    if (getParentNode() == NULL && depthFromActive > 1) { return; }
-    else if (depthFromActive < 0) { return; }
-    else if (getParentNode() && depthFromActive > 1) {
-        if (getParentNode()->isHighlighted() == false) { return; }
-    }
+    if (getParentNode() == NULL && depthFromActive > 1) return;
+    else if (depthFromActive < 0) return;
+    else if (getParentNode() && depthFromActive > 1)
+        if (getParentNode()->isHighlighted() == false) return;
     
     ofSetColor(nameColor);
-    ofDrawBitmapString(nodeLabel,   getPosition().x + getNodeRadius() + 5,
-                                    getPosition().y,
-                                    getPosition().z);
+    ofDrawBitmapString(nodeLabel, getPosition().x + getNodeRadius() + 5, getPosition().y, getPosition().z);
     
 }
 
@@ -704,22 +592,16 @@ bool ofxNUINode::isActive()
 
 void ofxNUINode::setActive(bool _isActive)
 {
-    
     active = _isActive;
-    
     if (isActive()) {
         depthFromActive = 0;
         setHighlight(false);
-        if (getParentNode()) {
+        if (getParentNode())
             getParentNode()->depthFromActive = -1;
-        }
     }
-    else if (getParentNode()) {
-        if (!getParentNode()->isActive()) {
+    else if (getParentNode())
+        if (!getParentNode()->isActive())
             depthFromActive = -1;
-        }
-    }
-    
 }
 
 //------------------------------
@@ -747,19 +629,14 @@ void ofxNUINode::setParentAsActive()
 
 void ofxNUINode::toggleActive()
 {
-    
     active = abs(active-1);
-    
     if (isActive()) {
         depthFromActive = 0;
         setHighlight(false);
     }
-    else if (getParentNode()) {
-        if (!getParentNode()->isActive()) {
+    else if (getParentNode())
+        if (!getParentNode()->isActive())
             depthFromActive = -1;
-        }
-    }
-    
 }
 
 //------------------------------
@@ -773,73 +650,44 @@ bool ofxNUINode::isHighlighted()
 
 void ofxNUINode::setHighlight(bool _isHighlighted)
 {
-    
     highlight = _isHighlighted;
-    
     if (isHighlighted()) {
         depthFromHighlighted = 0;
         setHighlightDepth();
     }
-    else {
-        resetHighlightDepth();
-    }
-    
+    else resetHighlightDepth();
 }
 
 //------------------------------
 
 void ofxNUINode::setHighlightDepth()
 {
-    
-    if (!isHighlighted()) {
+    if (!isHighlighted())
         depthFromHighlighted = getParentNode()->depthFromHighlighted + 1;
-    }
-    
     updateNodeColors();
-    
-    for (int i=0; i < children.size(); i++) {
-        children.at(i)->setHighlightDepth();
-    }
-    
+    for (auto &child : children) child->setHighlightDepth();
 }
 
 //------------------------------
 
 void ofxNUINode::resetHighlightDepth()
 {
-    
-    if (getParentNode()) {
-        if (getParentNode()->isActive()) {
-            depthFromHighlighted = -1;
-        }
-        else {
-            depthFromHighlighted = getParentNode()->getDepthFromHighlighted() - 1;
-        }
-    }
-    
+    if (getParentNode())
+        depthFromHighlighted = getParentNode()->isActive() ? -1 : getParentNode()->getDepthFromHighlighted() - 1;
     updateNodeColors();
-    
-    for (int i=0; i < children.size(); i++) {
-        children.at(i)->resetHighlightDepth();
-    }
-    
+    for (auto &child : children) child->resetHighlightDepth();
 }
 
 //------------------------------
 
 void ofxNUINode::toggleHighlight()
 {
-    
     highlight = abs(highlight-1);
-    
     if (isHighlighted() == true) {
         depthFromHighlighted = 0;
         setHighlightDepth();
     }
-    else {
-        resetHighlightDepth();
-    }
-    
+    else resetHighlightDepth();
 }
 
 //------------------------------

@@ -41,13 +41,6 @@ ofxNUIWidgetNode::ofxNUIWidgetNode(string _label, int _size)
 
 //------------------------------
 
-void ofxNUIWidgetNode::nodeInit()
-{
-    
-}
-
-//------------------------------
-
 void ofxNUIWidgetNode::setCamera(ofEasyCam *_cam)
 {
     ofxNUINode::setCamera(_cam);
@@ -345,7 +338,7 @@ void ofxNUIWidgetNode::widgetEventListener(ofxUIEventArgs &e)
                 ofxUIDropDownList *dropDownList = dynamic_cast<ofxUIDropDownList*>(widget);
                 if (ofGetMousePressed() == false
                     && dropDownList->getSelected().size()) {
-                    ofxUIWidget *selected = dropDownList->getSelected().at(0);
+                    ofxUIWidget *selected = dropDownList->getSelected().front();
                     widgetFunctions(selected->getName());
                 }
             }

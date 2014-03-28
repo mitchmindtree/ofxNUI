@@ -34,25 +34,23 @@
 #include "ofxTween.h"
 #include "ofxNUIColorScheme.h"
 
-#define OFXNUINODE_LAYOUT_RADIUS 300.0f
-#define OFXNUINODE_LAYOUT_DEPTH -200.0f
-
-#define OFXNUINODE_LAYOUT_RADIAL 0
-#define OFXNUINODE_LAYOUT_SPIRAL 1
-#define OFXNUINODE_LAYOUT_LIST 2
-#define OFXNUINODE_LAYOUT_GRID 3
-
-#define OFXNUINODE_SPIRAL_DEPTH_THRESHHOLD 32
-#define OFXNUINODE_SPIRAL_DEPTH_THRESHHOLD_PERC 0.03125f
-
-#define OFXNUINODE_DEFAULT_POS_TWEEN_DURATION 1000
-#define OFXNUINODE_DEFAULT_POS_TWEEN_DELAY 0
-
-#define OFXNUINODE_NODE_RADIUS 10
-
-#define OFXNUINODE_SHAPE_SPHERE 0
-#define OFXNUINODE_SHAPE_CIRCLE 1
-#define OFXNUINODE_SHAPE_TRIANGLE 2
+namespace OFXNUINODE
+{
+    const float LAYOUT_RADIUS = 300.f;
+    const float LAYOUT_DEPTH = -200.f;
+    const int LAYOUT_RADIAL = 0;
+    const int LAYOUT_SPIRAL = 1;
+    const int LAYOUT_LIST = 2;
+    const int LAYOUT_GRID = 3;
+    const int SPIRAL_DEPTH_THRESHHOLD = 32;
+    const float SPIRAL_DEPTH_THRESHHOLD_PERC = .03125f;
+    const int DEFAULT_POS_TWEEN_DURATION = 1000;
+    const int DEFAULT_POS_TWEEN_DELAY = 0;
+    const int NODE_RADIUS = 10;
+    const int SHAPE_SPHERE = 0;
+    const int SHAPE_CIRCLE = 1;
+    const int SHAPE_TRIANGLE = 2;
+};
 
 /* Class */
 
@@ -76,8 +74,7 @@ public:
     void addChild(ofxNUINode *_child);
     void addChild(ofxNUINode *_child, int num);
     void addChild(ofxNUINode *_child, string _name);
-    void addChildList(vector<ofxNUINode*> childList, string _name,
-                      int _layout = OFXNUINODE_LAYOUT_RADIAL);
+    void addChildList(vector<ofxNUINode*> childList, string _name, int _layout = OFXNUINODE::LAYOUT_RADIAL);
     
     /* Update When A New Node is Activated */
     void updateChildren();
@@ -194,7 +191,6 @@ private:
     //ofxNUIShape *shape;
     ofxNUIColorScheme *colorScheme;
     ofxNUINode *parentNode;
-    ofxNUINode *child;
     vector<ofxNUINode*> children;
     vector<ofxNUINode> listParents;
     vector<ofxNUINode> cloneChildren;
